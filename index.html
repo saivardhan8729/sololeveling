@@ -2,27 +2,202 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Music Background</title>
+<title>Sung jhinwooo</title>
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+:root {
+  --glow: #7f5cff;
+  --bg-glass: rgba(10, 10, 25, 0.75);
 }
 
-  <!-- Firebase SDK -->
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #eaeaff;
+
+  /* ❗ YOUR BACKGROUND IMAGE STAYS AS IS */
+  background: url("background.jpg") center/cover fixed no-repeat;
+}
+
+/* LOGIN */
+#login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  background: var(--bg-glass);
+  padding: 30px;
+  border-radius: 14px;
+  border: 1px solid var(--glow);
+  box-shadow: 0 0 25px rgba(127,92,255,0.4);
+  width: 300px;
+}
+
+.login-box h2 {
+  text-align: center;
+  color: var(--glow);
+  letter-spacing: 1px;
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+input {
+  background: #111;
+  color: white;
+}
+
+button {
+  background: linear-gradient(135deg, #7f5cff, #3b2fff);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* MAIN CONTENT */
+#content {
+  display: none;
+  padding: 20px;
+}
+
+/* SECTIONS */
+section {
+  background: var(--bg-glass);
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(127,92,255,0.4);
+  box-shadow: 0 0 20px rgba(127,92,255,0.2);
+}
+
+section h2 {
+  color: var(--glow);
+  border-left: 4px solid var(--glow);
+  padding-left: 10px;
+  margin-bottom: 15px;
+}
+
+/* GALLERY */
+#gallery img {
+  width: 150px;
+  margin: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(127,92,255,0.4);
+}
+
+#gallery video {
+  width: 300px;
+  margin: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(127,92,255,0.4);
+}
+
+/* HABITS */
+.habit {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 8px;
+}
+
+/* EQUALIZER */
+.equalizer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 70px;
+  cursor: pointer;
+  filter: drop-shadow(0 0 10px var(--glow));
+}
+
+.bar {
+  transform-origin: bottom;
+  animation: bounce 1.2s infinite ease-in-out;
+  fill: #bfa8ff;
+}
+
+.playing .bar {
+  animation-duration: 0.6s;
+}
+
+@keyframes bounce {
+  0%,100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-box">
+    <h2>SOLO LOGIN</h2>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">ENTER</button>
+    <p id="error" style="color:#ff6b6b;"></p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div id="content">
+
+  <!-- MUSIC -->
+  <audio id="music" loop></audio>
+
+  <!-- EQUALIZER -->
+  <svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
+    <rect class="bar" x="10" y="20" width="10" height="60"/>
+    <rect class="bar" x="30" y="20" width="10" height="60"/>
+    <rect class="bar" x="50" y="20" width="10" height="60"/>
+    <rect class="bar" x="70" y="20" width="10" height="60"/>
+    <rect class="bar" x="90" y="20" width="10" height="60"/>
+  </svg>
+
+  <!-- GALLERY -->
+  <section>
+    <h2>SHADOW GALLERY</h2>
+    <div id="gallery"></div>
+  </section>
+
+  <!-- HABITS -->
+  <section>
+    <h2>DAILY QUESTS</h2>
+    <div class="habit">
+      <span>Workout</span>
+      <input type="checkbox" onchange="saveHabit('Workout',this.checked)">
+    </div>
+    <div class="habit">
+      <span>Study</span>
+      <input type="checkbox" onchange="saveHabit('Study',this.checked)">
+    </div>
+    <div class="habit">
+      <span>Meditation</span>
+      <input type="checkbox" onchange="saveHabit('Meditation',this.checked)">
+    </div>
+  </section>
+
+</div>
+
+<!-- FIREBASE SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+/* 🔴 PASTE YOUR FIREBASE CONFIG HERE */
 const firebaseConfig = {
   apiKey: "AIzaSyCFzIAZ5F5YRQJ3zjOb0U9KJGI6aed_WKI",
   authDomain: "sololeveling-b9f87.firebaseapp.com",
@@ -31,79 +206,65 @@ const firebaseConfig = {
   messagingSenderId: "85355794256",
   appId: "1:85355794256:web:5e0b8e52d81d01cb202655"
 };
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
 
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-</script>
-  
-body {
-  background: url("background.jpg") center/cover no-repeat;
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* LOGIN */
+function login() {
+  auth.signInWithEmailAndPassword(email.value, password.value)
+    .then(() => {
+      login.style.display = "none";
+      content.style.display = "block";
+      loadGallery();
+    })
+    .catch(e => error.innerText = e.message);
 }
 
-/* Equalizer container */
-.equalizer {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 70px;
-  height: 70px;
-  cursor: pointer;
-}
-
-/* Bars animation */
-.bar {
-  transform-origin: bottom;
-  animation: bounce 1.2s infinite ease-in-out;
-}
-
-.bar:nth-child(1) { animation-delay: 0s; }
-.bar:nth-child(2) { animation-delay: 0.15s; }
-.bar:nth-child(3) { animation-delay: 0.3s; }
-.bar:nth-child(4) { animation-delay: 0.15s; }
-.bar:nth-child(5) { animation-delay: 0s; }
-
-/* Faster when playing */
-.playing .bar {
-  animation-duration: 0.6s;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-}
-</style>
-</head>
-
-<body>
-
-<!-- SVG Equalizer -->
-<svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
-  <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
-</svg>
-
-<audio id="bgMusic" loop muted>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
-
-<script>
+/* MUSIC */
 function toggleMusic() {
-  const music = document.getElementById("bgMusic");
-  const eq = document.getElementById("equalizer");
-
-  if (music.paused) {
-    music.muted = false;
-    music.play();
-    eq.classList.add("playing");
+  const m = music;
+  const e = equalizer;
+  if (m.paused) {
+    m.play();
+    e.classList.add("playing");
   } else {
-    music.pause();
-    eq.classList.remove("playing");
+    m.pause();
+    e.classList.remove("playing");
   }
+}
+
+/* HABITS */
+function saveHabit(name, value) {
+  db.collection("habits").add({
+    habit: name,
+    completed: value,
+    date: new Date().toISOString().split("T")[0],
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+/* GALLERY */
+function loadGallery() {
+  db.collection("media").orderBy("createdAt","desc")
+    .onSnapshot(snap => {
+      gallery.innerHTML = "";
+      snap.forEach(doc => {
+        const d = doc.data();
+        if (d.type === "photo") {
+          const img = document.createElement("img");
+          img.src = d.url;
+          gallery.appendChild(img);
+        }
+        if (d.type === "video") {
+          const v = document.createElement("video");
+          v.src = d.url;
+          v.controls = true;
+          gallery.appendChild(v);
+        }
+      });
+    });
 }
 </script>
 
