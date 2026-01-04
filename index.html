@@ -9,8 +9,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCFzIAZ5F5YRQJ3zjOb0U9KJGI6aed_WKI",
@@ -23,68 +22,69 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-const storage = getStorage();
 const db = getFirestore();
 
-/* -------- FIXED LOGIN -------- */
-const EMAIL = "solo.levelling8729@gmail.com";
-const PASSWORD = "saikrithi";
+/* 🔐 FIXED LOGIN */
+const EMAIL = "your_email@gmail.com";
+const PASSWORD = "your_password";
 
 signInWithEmailAndPassword(auth, EMAIL, PASSWORD)
-.catch(err => alert("Login Failed"));
+.catch(err => alert("Login failed"));
 
 onAuthStateChanged(auth, user => {
-  if (user) loadPhotos();
+  if(user) loadPhotos();
 });
 
-/* -------- PHOTO UPLOAD -------- */
+/* 📸 UPLOAD PHOTO (Base64 only) */
 window.uploadPhoto = async () => {
   const file = document.getElementById("photoInput").files[0];
-  if (!file) return alert("Choose photo");
+  if(!file) return alert("Select photo");
 
-  const storageRef = ref(storage, "photos/" + Date.now());
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
+  const reader = new FileReader();
+  reader.onload = async function(){
+    const base64 = reader.result;
 
-  await addDoc(collection(db, "photos"), {
-    url,
-    created: Date.now()
-  });
+    await addDoc(collection(db, "photos"), {
+      base64,
+      time: Date.now()
+    });
 
-  loadPhotos();
+    loadPhotos();
+  }
+  reader.readAsDataURL(file);
 };
 
-/* -------- LOAD GALLERY -------- */
-async function loadPhotos() {
+/* 🖼 LOAD GALLERY */
+async function loadPhotos(){
   const grid = document.getElementById("photoGrid");
   grid.innerHTML = "";
 
-  const q = query(collection(db, "photos"), orderBy("created","desc"));
+  const q = query(collection(db,"photos"), orderBy("time","desc"));
   const snap = await getDocs(q);
 
-  snap.forEach(doc => {
+  snap.forEach(d=>{
     const img = document.createElement("img");
-    img.src = doc.data().url;
-    img.onclick = () => openFull(img.src);
+    img.src = d.data().base64;
+    img.onclick = ()=>openFull(img.src);
     grid.appendChild(img);
   });
 }
 </script>
 
 <style>
-body{background:black;color:white;margin:0;font-family:Arial}
-.menu-btn{position:fixed;top:16px;left:16px;width:52px;height:52px;border-radius:50%;background:#222;color:white;font-size:26px;display:flex;align-items:center;justify-content:center;z-index:10}
+body{margin:0;background:black;color:white;font-family:Arial}
+.menu-btn{position:fixed;top:16px;left:16px;width:52px;height:52px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:26px;z-index:10}
 .sidebar{position:fixed;left:-260px;top:0;width:260px;height:100%;background:#12001f;padding-top:90px;transition:.3s;z-index:11}
 .sidebar.open{left:0}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);display:none;z-index:10}
-.menu-item{padding:16px;font-size:18px;cursor:pointer;animation:glow 2s infinite alternate}
-@keyframes glow{from{text-shadow:0 0 5px #8a2be2}to{text-shadow:0 0 20px #b84cff}}
-section{display:none;padding:90px 16px}
+.menu-item{padding:16px;font-size:18px;animation:glow 2s infinite alternate;cursor:pointer}
+@keyframes glow{from{text-shadow:0 0 5px #7f2cff}to{text-shadow:0 0 20px #b84cff}}
+section{display:none;padding:100px 16px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
-.grid img{width:100%;border-radius:8px;cursor:pointer}
+.grid img{width:100%;border-radius:8px}
 .full{position:fixed;inset:0;background:black;display:none;align-items:center;justify-content:center;z-index:20}
 .full img{max-width:95%;max-height:95%}
-.close{position:absolute;top:20px;right:20px;font-size:26px}
+.close{position:absolute;top:20px;right:20px;font-size:24px}
 .equalizer{position:fixed;bottom:16px;left:16px;display:flex;gap:4px}
 .bar{width:5px;background:#8a2be2;animation:bounce 1s infinite alternate}
 @keyframes bounce{from{height:6px}to{height:26px}}
