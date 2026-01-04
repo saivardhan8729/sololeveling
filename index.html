@@ -1,126 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Solo Leveling</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCFzIAZ5F5YRQJ3zjOb0U9KJGI6aed_WKI",
-  authDomain: "sololeveling-b9f87.firebaseapp.com",
-  projectId: "sololeveling-b9f87",
-  storageBucket: "sololeveling-b9f87.appspot.com",
-  messagingSenderId: "85355794256",
-  appId: "1:85355794256:web:5e0b8e52d81d01cb202655"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
-
-/* 🔐 FIXED LOGIN */
-const EMAIL = "your_email@gmail.com";
-const PASSWORD = "your_password";
-
-signInWithEmailAndPassword(auth, EMAIL, PASSWORD)
-.catch(err => alert("Login failed"));
-
-onAuthStateChanged(auth, user => {
-  if(user) loadPhotos();
-});
-
-/* 📸 UPLOAD PHOTO (Base64 only) */
-window.uploadPhoto = async () => {
-  const file = document.getElementById("photoInput").files[0];
-  if(!file) return alert("Select photo");
-
-  const reader = new FileReader();
-  reader.onload = async function(){
-    const base64 = reader.result;
-
-    await addDoc(collection(db, "photos"), {
-      base64,
-      time: Date.now()
-    });
-
-    loadPhotos();
-  }
-  reader.readAsDataURL(file);
-};
-
-/* 🖼 LOAD GALLERY */
-async function loadPhotos(){
-  const grid = document.getElementById("photoGrid");
-  grid.innerHTML = "";
-
-  const q = query(collection(db,"photos"), orderBy("time","desc"));
-  const snap = await getDocs(q);
-
-  snap.forEach(d=>{
-    const img = document.createElement("img");
-    img.src = d.data().base64;
-    img.onclick = ()=>openFull(img.src);
-    grid.appendChild(img);
-  });
-}
-</script>
+<title>Music Background with Login</title>
 
 <style>
-body{margin:0;background:black;color:white;font-family:Arial}
-.menu-btn{position:fixed;top:16px;left:16px;width:52px;height:52px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:26px;z-index:10}
-.sidebar{position:fixed;left:-260px;top:0;width:260px;height:100%;background:#12001f;padding-top:90px;transition:.3s;z-index:11}
-.sidebar.open{left:0}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);display:none;z-index:10}
-.menu-item{padding:16px;font-size:18px;animation:glow 2s infinite alternate;cursor:pointer}
-@keyframes glow{from{text-shadow:0 0 5px #7f2cff}to{text-shadow:0 0 20px #b84cff}}
-section{display:none;padding:100px 16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
-.grid img{width:100%;border-radius:8px}
-.full{position:fixed;inset:0;background:black;display:none;align-items:center;justify-content:center;z-index:20}
-.full img{max-width:95%;max-height:95%}
-.close{position:absolute;top:20px;right:20px;font-size:24px}
-.equalizer{position:fixed;bottom:16px;left:16px;display:flex;gap:4px}
-.bar{width:5px;background:#8a2be2;animation:bounce 1s infinite alternate}
-@keyframes bounce{from{height:6px}to{height:26px}}
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* Main background after login */
+body {
+  background: url("background.jpg") center/cover no-repeat;
+  transition: background 0.5s ease;
+}
+
+/* Equalizer container */
+.equalizer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  display: none; /* hidden until login */
+}
+
+/* Bars animation */
+.bar {
+  transform-origin: bottom;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.bar:nth-child(1) { animation-delay: 0s; }
+.bar:nth-child(2) { animation-delay: 0.15s; }
+.bar:nth-child(3) { animation-delay: 0.3s; }
+.bar:nth-child(4) { animation-delay: 0.15s; }
+.bar:nth-child(5) { animation-delay: 0s; }
+
+/* Faster when playing */
+.playing .bar {
+  animation-duration: 0.6s;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+/* Login overlay with background image */
+#loginOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("pic.jpg") center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  transition: opacity 0.5s ease;
+}
+
+/* Semi-transparent login box */
+#loginBox {
+  background: rgba(0, 0, 0, 0.7); 
+  padding: 30px;
+  border-radius: 10px;
+  color: white;
+  width: 300px;
+  text-align: center;
+}
+
+#loginBox input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: none;
+  font-size: 1em;
+}
+
+#loginBox button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 1em;
+}
+
+#errorMsg {
+  color: red;
+  margin-top: 10px;
+  font-size: 0.9em;
+}
 </style>
+</head>
 
 <body>
 
-<div class="menu-btn" onclick="toggle()">☰</div>
-<div class="overlay" onclick="closeSide()"></div>
-
-<div class="sidebar" id="side">
-  <div class="menu-item" onclick="show('photos')">📸 Photos</div>
+<!-- Login Overlay -->
+<div id="loginOverlay">
+  <div id="loginBox">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="checkLogin()">Login</button>
+    <div id="errorMsg"></div>
+  </div>
 </div>
 
-<section id="photos">
-  <input type="file" id="photoInput">
-  <button onclick="uploadPhoto()">Upload Photo</button>
-  <br><br>
-  <div class="grid" id="photoGrid"></div>
-</section>
+<!-- SVG Equalizer -->
+<svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
+  <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
+</svg>
 
-<div class="full" id="full">
-  <span class="close" onclick="closeFull()">✖</span>
-  <img id="fullImg">
-</div>
-
-<div class="equalizer">
-  <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-</div>
+<!-- Background music -->
+<audio id="bgMusic" loop muted>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-function toggle(){side.classList.toggle("open");overlay.style.display="block"}
-function closeSide(){side.classList.remove("open");overlay.style.display="none"}
-function show(id){document.querySelectorAll("section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";closeSide()}
-function openFull(src){full.style.display="flex";fullImg.src=src}
-function closeFull(){full.style.display="none"}
+// Toggle music play/pause
+function toggleMusic() {
+  const music = document.getElementById("bgMusic");
+  const eq = document.getElementById("equalizer");
+
+  if (music.paused) {
+    music.muted = false;
+    music.play();
+    eq.classList.add("playing");
+  } else {
+    music.pause();
+    eq.classList.remove("playing");
+  }
+}
+
+// Login logic
+function checkLogin() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const errorMsg = document.getElementById("errorMsg");
+
+  if (username === "sungjhinwoo" && password === "saikrithi") {
+    // Hide login overlay
+    const overlay = document.getElementById("loginOverlay");
+    overlay.style.opacity = "0";
+    setTimeout(() => overlay.style.display = "none", 500);
+
+    // Show equalizer
+    document.getElementById("equalizer").style.display = "block";
+
+    // Optionally start music automatically
+    const music = document.getElementById("bgMusic");
+    music.muted = false;
+    music.play();
+    
+    errorMsg.textContent = "";
+  } else {
+    errorMsg.textContent = "Incorrect username or password!";
+  }
+}
 </script>
 
 </body>
