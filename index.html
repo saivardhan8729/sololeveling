@@ -1,67 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Website</title>
+<meta charset="UTF-8">
+<title>Equalizer Music</title>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: Arial, sans-serif;
-    }
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
 
-    body {
-      background-image: url("background.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+body {
+  background: url("background.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-    }
+/* Equalizer container */
+.equalizer {
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+}
 
-    .overlay {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 40px;
-      border-radius: 12px;
-    }
+/* Bars animation (idle) */
+.bar {
+  animation: bounce 1.2s infinite ease-in-out;
+  transform-origin: bottom;
+}
 
-    button {
-      margin-top: 20px;
-      padding: 12px 24px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+.bar:nth-child(1) { animation-delay: 0s; }
+.bar:nth-child(2) { animation-delay: 0.15s; }
+.bar:nth-child(3) { animation-delay: 0.3s; }
+.bar:nth-child(4) { animation-delay: 0.15s; }
+.bar:nth-child(5) { animation-delay: 0s; }
+
+/* Playing = faster bass */
+.playing .bar {
+  animation-duration: 0.6s;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+</style>
 </head>
+
 <body>
 
-  <div class="overlay">
-    <h1>Welcome</h1>
-    <p>Click to play music 🎵</p>
-    <button onclick="playMusic()">Play Music</button>
-  </div>
+<!-- SVG Equalizer -->
+<svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="playMusic()">
+  <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
+</svg>
 
-  <!-- Background Music -->
-  <audio id="bgMusic" loop muted>
-    <source src="music.mp3" type="audio/mpeg">
-    Your browser does not support audio.
-  </audio>
+<audio id="bgMusic" loop muted>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
-  <script>
-    function playMusic() {
-      const music = document.getElementById("bgMusic");
-      music.muted = false;
-      music.play();
-    }
-  </script>
+<script>
+function playMusic() {
+  const music = document.getElementById("bgMusic");
+  const eq = document.getElementById("equalizer");
+
+  music.muted = false;
+  music.play();
+
+  eq.classList.add("playing");
+}
+</script>
 
 </body>
 </html>
