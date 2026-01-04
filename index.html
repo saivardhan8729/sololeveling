@@ -2,139 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sung jhinwooo</title>
-
+<title>Solo Leveling</title>
 <style>
 :root {
   --glow: #7f5cff;
-  --bg-glass: rgba(10, 10, 25, 0.75);
+  --bg-glass: rgba(10,10,25,0.75);
 }
-
 body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  color: #eaeaff;
-
-  /* ❗ YOUR BACKGROUND IMAGE STAYS AS IS */
+  margin:0; font-family:"Segoe UI", Arial, sans-serif;
+  color:#eaeaff;
   background: url("background.jpg") center/cover fixed no-repeat;
 }
 
 /* LOGIN */
 #login {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height:100vh; display:flex; justify-content:center; align-items:center;
 }
-
 .login-box {
-  background: var(--bg-glass);
-  padding: 30px;
-  border-radius: 14px;
-  border: 1px solid var(--glow);
-  box-shadow: 0 0 25px rgba(127,92,255,0.4);
-  width: 300px;
+  background: var(--bg-glass); padding:30px; border-radius:14px;
+  border:1px solid var(--glow); box-shadow:0 0 25px rgba(127,92,255,0.4); width:300px;
 }
-
-.login-box h2 {
-  text-align: center;
-  color: var(--glow);
-  letter-spacing: 1px;
-}
-
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 12px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-}
-
-input {
-  background: #111;
-  color: white;
-}
-
-button {
-  background: linear-gradient(135deg, #7f5cff, #3b2fff);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
+.login-box h2 {text-align:center; color:var(--glow); letter-spacing:1px;}
+input, button {width:100%; padding:10px; margin-top:12px; border-radius:6px; border:none; outline:none;}
+input{background:#111;color:white;}
+button{background:linear-gradient(135deg,#7f5cff,#3b2fff); color:white; font-weight:bold; cursor:pointer;}
 
 /* MAIN CONTENT */
-#content {
-  display: none;
-  padding: 20px;
-}
-
-/* SECTIONS */
-section {
-  background: var(--bg-glass);
-  padding: 20px;
-  border-radius: 14px;
-  margin-bottom: 30px;
-  border: 1px solid rgba(127,92,255,0.4);
-  box-shadow: 0 0 20px rgba(127,92,255,0.2);
-}
-
-section h2 {
-  color: var(--glow);
-  border-left: 4px solid var(--glow);
-  padding-left: 10px;
-  margin-bottom: 15px;
-}
+#content {display:none; padding:20px;}
+section {background:var(--bg-glass); padding:20px; border-radius:14px; margin-bottom:30px;
+border:1px solid rgba(127,92,255,0.4); box-shadow:0 0 20px rgba(127,92,255,0.2);}
+section h2 {color:var(--glow); border-left:4px solid var(--glow); padding-left:10px; margin-bottom:15px;}
 
 /* GALLERY */
-#gallery img {
-  width: 150px;
-  margin: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(127,92,255,0.4);
-}
-
-#gallery video {
-  width: 300px;
-  margin: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(127,92,255,0.4);
-}
+#gallery img{width:150px;margin:10px;border-radius:10px;box-shadow:0 0 15px rgba(127,92,255,0.4);}
+#gallery video{width:300px;margin:10px;border-radius:10px;box-shadow:0 0 20px rgba(127,92,255,0.4);}
 
 /* HABITS */
-.habit {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-  padding: 8px 12px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 8px;
-}
+.habit{display:flex;justify-content:space-between;margin:10px 0;padding:8px 12px;background:rgba(0,0,0,0.4);border-radius:8px;}
+
+/* UPLOAD BUTTONS */
+.upload-btn {margin-top:10px;padding:10px;border:none;border-radius:6px;background:linear-gradient(135deg,#7f5cff,#3b2fff); color:white; cursor:pointer;}
 
 /* EQUALIZER */
-.equalizer {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 70px;
-  cursor: pointer;
-  filter: drop-shadow(0 0 10px var(--glow));
-}
-
-.bar {
-  transform-origin: bottom;
-  animation: bounce 1.2s infinite ease-in-out;
-  fill: #bfa8ff;
-}
-
-.playing .bar {
-  animation-duration: 0.6s;
-}
-
-@keyframes bounce {
-  0%,100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-}
+.equalizer{position:fixed; bottom:20px; left:20px; width:70px; cursor:pointer; filter:drop-shadow(0 0 10px var(--glow));}
+.bar{transform-origin:bottom;animation:bounce 1.2s infinite ease-in-out; fill:#bfa8ff;}
+.playing .bar{animation-duration:0.6s;}
+@keyframes bounce{0%,100%{transform:scaleY(0.3);}50%{transform:scaleY(1);}}
 </style>
 </head>
 
@@ -169,6 +82,10 @@ section h2 {
   <!-- GALLERY -->
   <section>
     <h2>SHADOW GALLERY</h2>
+    <input type="file" id="photoUpload" accept="image/*">
+    <button class="upload-btn" onclick="uploadFile('photo')">Upload Photo</button>
+    <input type="file" id="videoUpload" accept="video/*">
+    <button class="upload-btn" onclick="uploadFile('video')">Upload Video</button>
     <div id="gallery"></div>
   </section>
 
@@ -191,10 +108,11 @@ section h2 {
 
 </div>
 
-<!-- FIREBASE SDKs -->
+<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <script>
 /* 🔴 PASTE YOUR FIREBASE CONFIG HERE */
@@ -206,67 +124,69 @@ const firebaseConfig = {
   messagingSenderId: "85355794256",
   appId: "1:85355794256:web:5e0b8e52d81d01cb202655"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 /* LOGIN */
 function login() {
   auth.signInWithEmailAndPassword(email.value, password.value)
-    .then(() => {
-      login.style.display = "none";
-      content.style.display = "block";
-      loadGallery();
-    })
-    .catch(e => error.innerText = e.message);
+    .then(() => { login.style.display="none"; content.style.display="block"; loadGallery(); })
+    .catch(e=>error.innerText=e.message);
 }
 
 /* MUSIC */
-function toggleMusic() {
-  const m = music;
-  const e = equalizer;
-  if (m.paused) {
-    m.play();
-    e.classList.add("playing");
-  } else {
-    m.pause();
-    e.classList.remove("playing");
-  }
+function toggleMusic(){
+  const m=music; const e=equalizer;
+  if(m.paused){m.play(); e.classList.add("playing");}
+  else{m.pause(); e.classList.remove("playing");}
 }
 
 /* HABITS */
-function saveHabit(name, value) {
+function saveHabit(name,value){
   db.collection("habits").add({
-    habit: name,
-    completed: value,
-    date: new Date().toISOString().split("T")[0],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    habit:name,
+    completed:value,
+    date:new Date().toISOString().split("T")[0],
+    uid:auth.currentUser.uid,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
 }
 
 /* GALLERY */
-function loadGallery() {
+function loadGallery(){
   db.collection("media").orderBy("createdAt","desc")
-    .onSnapshot(snap => {
-      gallery.innerHTML = "";
-      snap.forEach(doc => {
-        const d = doc.data();
-        if (d.type === "photo") {
-          const img = document.createElement("img");
-          img.src = d.url;
-          gallery.appendChild(img);
-        }
-        if (d.type === "video") {
-          const v = document.createElement("video");
-          v.src = d.url;
-          v.controls = true;
-          gallery.appendChild(v);
-        }
+    .onSnapshot(snap=>{
+      gallery.innerHTML="";
+      snap.forEach(doc=>{
+        const d=doc.data();
+        if(d.type==="photo"){const img=document.createElement("img"); img.src=d.url; gallery.appendChild(img);}
+        if(d.type==="video"){const v=document.createElement("video"); v.src=d.url; v.controls=true; gallery.appendChild(v);}
       });
     });
 }
-</script>
 
+/* UPLOAD FILES */
+function uploadFile(type){
+  let fileInput = type==="photo"? photoUpload : videoUpload;
+  if(fileInput.files.length===0){alert("Select a file first!"); return;}
+  const file = fileInput.files[0];
+  const path = `${type}s/${Date.now()}_${file.name}`;
+  const storageRef = storage.ref(path);
+  storageRef.put(file).then(snapshot=>{
+    snapshot.ref.getDownloadURL().then(url=>{
+      db.collection("media").add({
+        url: url,
+        type: type,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid: auth.currentUser.uid
+      });
+      alert(type+" uploaded!");
+      fileInput.value="";
+    });
+  });
+}
+</script>
 </body>
 </html>
