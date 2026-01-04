@@ -56,7 +56,7 @@ section h2 {color:var(--glow); border-left:4px solid var(--glow); padding-left:1
 <!-- LOGIN -->
 <div id="login">
   <div class="login-box">
-    <h2>SOLO LOGIN</h2>
+    <h2>LOGIN</h2>
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
     <button onclick="login()">ENTER</button>
@@ -108,39 +108,52 @@ section h2 {color:var(--glow); border-left:4px solid var(--glow); padding-left:1
 
 </div>
 
-<!-- FIREBASE SDK -->
+<!-- FIREBASE COMPAT SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <script>
-/* 🔴 PASTE YOUR FIREBASE CONFIG HERE */
+// 🔹 Your Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCFzIAZ5F5YRQJ3zjOb0U9KJGI6aed_WKI",
   authDomain: "sololeveling-b9f87.firebaseapp.com",
   projectId: "sololeveling-b9f87",
-  storageBucket: "sololeveling-b9f87.firebasestorage.app",
+  storageBucket: "sololeveling-b9f87.appspot.com",
   messagingSenderId: "85355794256",
   appId: "1:85355794256:web:5e0b8e52d81d01cb202655"
 };
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-/* LOGIN */
+/* LOGIN FUNCTION */
 function login() {
-  auth.signInWithEmailAndPassword(email.value, password.value)
-    .then(() => { login.style.display="none"; content.style.display="block"; loadGallery(); })
-    .catch(e=>error.innerText=e.message);
+  const loginBox = document.getElementById("login");
+  const contentBox = document.getElementById("content");
+  const emailInput = document.getElementById("email").value;
+  const passwordInput = document.getElementById("password").value;
+
+  auth.signInWithEmailAndPassword(emailInput, passwordInput)
+    .then(() => {
+      loginBox.style.display = "none";
+      contentBox.style.display = "block";
+      loadGallery();
+    })
+    .catch(err => {
+      document.getElementById("error").innerText = err.message;
+    });
 }
 
 /* MUSIC */
 function toggleMusic(){
-  const m=music; const e=equalizer;
-  if(m.paused){m.play(); e.classList.add("playing");}
-  else{m.pause(); e.classList.remove("playing");}
+  const m = document.getElementById("music");
+  const e = document.getElementById("equalizer");
+  if(m.paused){ m.play(); e.classList.add("playing"); }
+  else{ m.pause(); e.classList.remove("playing"); }
 }
 
 /* HABITS */
@@ -156,20 +169,21 @@ function saveHabit(name,value){
 
 /* GALLERY */
 function loadGallery(){
+  const gallery = document.getElementById("gallery");
   db.collection("media").orderBy("createdAt","desc")
     .onSnapshot(snap=>{
       gallery.innerHTML="";
       snap.forEach(doc=>{
-        const d=doc.data();
-        if(d.type==="photo"){const img=document.createElement("img"); img.src=d.url; gallery.appendChild(img);}
-        if(d.type==="video"){const v=document.createElement("video"); v.src=d.url; v.controls=true; gallery.appendChild(v);}
+        const d = doc.data();
+        if(d.type==="photo"){ const img=document.createElement("img"); img.src=d.url; gallery.appendChild(img); }
+        if(d.type==="video"){ const v=document.createElement("video"); v.src=d.url; v.controls=true; gallery.appendChild(v); }
       });
     });
 }
 
 /* UPLOAD FILES */
 function uploadFile(type){
-  let fileInput = type==="photo"? photoUpload : videoUpload;
+  const fileInput = type==="photo"? document.getElementById("photoUpload") : document.getElementById("videoUpload");
   if(fileInput.files.length===0){alert("Select a file first!"); return;}
   const file = fileInput.files[0];
   const path = `${type}s/${Date.now()}_${file.name}`;
