@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sung jhinwooo</title>
+<title>Music Background</title>
 
 <style>
 html, body {
@@ -13,22 +13,22 @@ html, body {
 
 body {
   background: url("background.jpg") center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Equalizer container */
 .equalizer {
-  width: 80px;
-  height: 80px;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 70px;
+  height: 70px;
   cursor: pointer;
 }
 
-/* Bars animation (idle) */
+/* Bars animation */
 .bar {
-  animation: bounce 1.2s infinite ease-in-out;
   transform-origin: bottom;
+  animation: bounce 1.2s infinite ease-in-out;
 }
 
 .bar:nth-child(1) { animation-delay: 0s; }
@@ -37,7 +37,7 @@ body {
 .bar:nth-child(4) { animation-delay: 0.15s; }
 .bar:nth-child(5) { animation-delay: 0s; }
 
-/* Playing = faster bass */
+/* Faster when playing */
 .playing .bar {
   animation-duration: 0.6s;
 }
@@ -52,7 +52,7 @@ body {
 <body>
 
 <!-- SVG Equalizer -->
-<svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="playMusic()">
+<svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
   <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
   <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
   <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
@@ -65,14 +65,18 @@ body {
 </audio>
 
 <script>
-function playMusic() {
+function toggleMusic() {
   const music = document.getElementById("bgMusic");
   const eq = document.getElementById("equalizer");
 
-  music.muted = false;
-  music.play();
-
-  eq.classList.add("playing");
+  if (music.paused) {
+    music.muted = false;
+    music.play();
+    eq.classList.add("playing");
+  } else {
+    music.pause();
+    eq.classList.remove("playing");
+  }
 }
 </script>
 
