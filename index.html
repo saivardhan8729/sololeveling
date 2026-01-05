@@ -1,324 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>sololeveling</title>
+    <meta charset="UTF-8">
+    <title>Solo Leveling - Hunter Gallery</title>
+    <style>
+        html, body { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        
+        /* Background Layer */
+        #main-bg {
+            position: fixed;
+            inset: 0;
+            background: url("background.jpg") center/cover no-repeat;
+            transition: filter 0.4s ease, transform 0.4s ease;
+            z-index: 1;
+        }
 
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: Arial, sans-serif;
-}
+        /* Blur State */
+        .is-blurred { filter: blur(15px) brightness(0.7); transform: scale(1.05); }
 
-body {
-  background: url("background.jpg") center/cover no-repeat;
-  transition: filter 0.3s ease;
-}
+        /* ================= LOGIN ================= */
+        #loginOverlay {
+            position: fixed;
+            inset: 0;
+            background: url("pic.jpg") center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        #loginBox {
+            background: rgba(0,0,0,0.85);
+            padding: 40px;
+            border-radius: 15px;
+            color: white;
+            width: 320px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        #loginBox input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; box-sizing: border-box; }
+        #loginBox button { width: 100%; padding: 12px; border-radius: 5px; border: none; background: #2563eb; color: white; cursor: pointer; font-weight: bold; }
 
-body.blurred {
-  filter: blur(5px);
-}
+        /* ================= SIDEBAR ================= */
+        #menuBtn {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 12px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 2000;
+            gap: 5px;
+        }
+        #menuBtn span { width: 25px; height: 3px; background: white; border-radius: 2px; transition: 0.3s; }
+        
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 260px;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            padding-top: 100px;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1500;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        #sidebar.show { left: 0; }
+        .sidebar-item { padding: 18px 30px; color: #ccc; font-size: 18px; cursor: pointer; transition: 0.2s; }
+        .sidebar-item:hover { color: white; background: rgba(255,255,255,0.05); padding-left: 40px; }
 
-/* ================= LOGIN ================= */
-#loginOverlay {
-  position: fixed;
-  inset: 0;
-  background: url("pic.jpg") center/cover no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
+        /* ================= PHOTO PAGE (GRID) ================= */
+        #photoPage {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 1800;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 40px;
+        }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-row h1 { color: white; margin: 0; }
+        .close-grid { color: white; font-size: 30px; cursor: pointer; }
 
-#loginBox {
-  background: rgba(0,0,0,0.7);
-  padding: 30px;
-  border-radius: 10px;
-  color: white;
-  width: 300px;
-  text-align: center;
-}
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        #grid-container img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: #1a1a1a;
+        }
+        #grid-container img:hover { transform: translateY(-5px); outline: 2px solid #2563eb; }
 
-#loginBox input {
-  width: 90%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 5px;
-  border: none;
-}
+        /* ================= FULLSCREEN VIEWER ================= */
+        #photoViewer {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.98);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+        #photoViewer img { max-width: 90%; max-height: 90vh; border-radius: 5px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
 
-#loginBox button {
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: none;
-  background: #4CAF50;
-  color: white;
-  cursor: pointer;
-}
-
-#errorMsg {
-  color: red;
-}
-
-/* ================= EQUALIZER ================= */
-.equalizer {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 70px;
-  height: 70px;
-  display: none;
-  cursor: pointer;
-}
-
-.bar {
-  transform-origin: bottom;
-  animation: bounce 1.2s infinite ease-in-out;
-}
-
-.playing .bar {
-  animation-duration: 0.6s;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-}
-
-/* ================= MENU BUTTON ================= */
-#menuBtn {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 64px;
-  height: 64px;
-  background: rgba(30,30,30,0.9);
-  border-radius: 50%;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-#menuBtn span {
-  position: absolute;
-  width: 26px;
-  height: 4px;
-  background: white;
-  border-radius: 4px;
-}
-
-#menuBtn span:first-child { transform: translateY(-6px); }
-#menuBtn span:last-child { transform: translateY(6px); }
-
-/* ================= SIDEBAR ================= */
-#sidebar {
-  position: fixed;
-  top: 0;
-  left: -240px;
-  width: 220px;
-  height: 100%;
-  background: rgba(0,0,0,0.95);
-  padding-top: 100px;
-  transition: left 0.3s ease;
-  z-index: 999;
-}
-
-#sidebar.show {
-  left: 0;
-}
-
-.sidebar-item {
-  padding: 15px 25px;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.sidebar-item:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-/* ================= PHOTO GRID ================= */
-#photoGrid {
-  position: fixed;
-  inset: 80px 10px 10px 10px;
-  display: none;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-  z-index: 998;
-}
-
-#photoGrid img {
-  width: 100%;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* ================= FULLSCREEN VIEW ================= */
-#photoViewer {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.95);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1001;
-}
-
-#photoViewer img {
-  max-width: 95%;
-  max-height: 95%;
-}
-</style>
+        /* ================= EQUALIZER ================= */
+        .equalizer { position: fixed; bottom: 25px; left: 25px; width: 40px; height: 40px; display: none; cursor: pointer; z-index: 2000; }
+    </style>
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div id="loginOverlay">
-  <div id="loginBox">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="checkLogin()">Login</button>
-    <div id="errorMsg"></div>
-  </div>
-</div>
+    <div id="main-bg"></div>
 
-<!-- MENU BUTTON -->
-<div id="menuBtn">
-  <span></span>
-  <span></span>
-</div>
+    <div id="loginOverlay">
+        <div id="loginBox">
+            <h2 style="margin-top:0">System Login</h2>
+            <input type="email" id="email" placeholder="Hunter Email">
+            <input type="password" id="password" placeholder="Access Key">
+            <button onclick="checkLogin()">Authenticate</button>
+            <div id="errorMsg" style="margin-top:10px; font-size: 13px; color: #ff4d4d;"></div>
+        </div>
+    </div>
 
-<!-- SIDEBAR -->
-<div id="sidebar">
-  <div class="sidebar-item" onclick="openPhotos()">📷 Photos</div>
-</div>
+    <div id="menuBtn"><span></span><span></span><span></span></div>
+    
+    <div id="sidebar">
+        <div class="sidebar-item" onclick="openPhotos()">📷 Dungeon Gallery</div>
+        <div class="sidebar-item" onclick="location.reload()">🔄 Logout</div>
+    </div>
 
-<!-- EQUALIZER -->
-<svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
-  <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>
-  <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
-</svg>
+    <div id="photoPage">
+        <div class="header-row">
+            <h1>Gallery</h1>
+            <span class="close-grid" onclick="closePhotos()">×</span>
+        </div>
+        <div id="grid-container"></div>
+    </div>
 
-<!-- MUSIC -->
-<audio id="bgMusic" loop muted>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
+    <div id="photoViewer" onclick="closeViewer()">
+        <img id="photoViewerImg">
+    </div>
 
-<!-- PHOTO GRID + VIEWER (removed from main page) -->
+    <audio id="bgMusic" loop muted><source src="music.mp3" type="audio/mpeg"></audio>
 
-<!-- APPWRITE SDK -->
-<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
+    <script>
+        const client = new Appwrite.Client().setEndpoint("https://nyc.cloud.appwrite.io/v1").setProject("695b05ea0019ea169d0f");
+        const account = new Appwrite.Account(client);
+        const storage = new Appwrite.Storage(client);
+        const BUCKET_ID = "avatars";
 
-<script>
-/* ================= APPWRITE ================= */
-const client = new Appwrite.Client()
-  .setEndpoint("https://nyc.cloud.appwrite.io/v1")
-  .setProject("695b05ea0019ea169d0f");
+        const bg = document.getElementById('main-bg');
+        const side = document.getElementById('sidebar');
 
-const account = new Appwrite.Account(client);
-const databases = new Appwrite.Databases(client);
-const storage = new Appwrite.Storage(client);
+        // Toggle Sidebar & Blur
+        menuBtn.onclick = () => {
+            const isShowing = side.classList.toggle("show");
+            bg.classList.toggle("is-blurred", isShowing);
+        };
 
-const DATABASE_ID = "695b05d0022af00758d";
-const COLLECTION_ID = "sololeveling";
-const BUCKET_ID = "avatars";
+        async function checkLogin() {
+            try {
+                await account.createEmailPasswordSession(email.value, password.value);
+                onLoginSuccess();
+            } catch (e) { errorMsg.textContent = e.message; }
+        }
 
-/* ================= UI ================= */
-menuBtn.onclick = () => {
-  sidebar.classList.toggle("show");
-  document.body.classList.toggle("blurred");
-};
+        function onLoginSuccess() {
+            loginOverlay.style.display = "none";
+            menuBtn.style.display = "flex";
+            // Check if music was playing before
+        }
 
-/* ================= AUTH ================= */
-async function checkLogin() {
-  try {
-    await account.createEmailPasswordSession(email.value, password.value);
-    onLoginSuccess();
-  } catch (e) {
-    errorMsg.textContent = e.message;
-  }
-}
+        // Gallery Functions
+        async function openPhotos() {
+            side.classList.remove("show");
+            photoPage.style.display = "flex";
+            const container = document.getElementById('grid-container');
+            container.innerHTML = "<p style='color:white'>Scanning Dungeon...</p>";
 
-async function onLoginSuccess() {
-  loginOverlay.style.display = "none";
-  equalizer.style.display = "block";
-  menuBtn.style.display = "flex";
-  loadMusicState();
-}
+            try {
+                const files = await storage.listFiles(BUCKET_ID);
+                container.innerHTML = "";
+                files.files.forEach(f => {
+                    const img = document.createElement("img");
+                    img.src = storage.getFileView(BUCKET_ID, f.$id);
+                    img.onclick = (e) => {
+                        e.stopPropagation();
+                        openViewer(img.src);
+                    };
+                    container.appendChild(img);
+                });
+            } catch (e) { container.innerHTML = "Failed to load images."; }
+        }
 
-/* ================= MUSIC ================= */
-function toggleMusic() {
-  if (bgMusic.paused) {
-    bgMusic.muted = false;
-    bgMusic.play();
-    equalizer.classList.add("playing");
-    saveMusic(true);
-  } else {
-    bgMusic.pause();
-    equalizer.classList.remove("playing");
-    saveMusic(false);
-  }
-}
+        function closePhotos() {
+            photoPage.style.display = "none";
+            bg.classList.remove("is-blurred");
+        }
 
-/* ================= DATABASE ================= */
-async function saveMusic(state) {
-  const user = await account.get();
-  const res = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTION_ID,
-    [Appwrite.Query.equal("userId", user.$id)]
-  );
+        function openViewer(src) {
+            photoViewerImg.src = src;
+            photoViewer.style.display = "flex";
+        }
 
-  if (res.total > 0) {
-    await databases.updateDocument(
-      DATABASE_ID,
-      COLLECTION_ID,
-      res.documents[0].$id,
-      { musicOn: state }
-    );
-  } else {
-    await databases.createDocument(
-      DATABASE_ID,
-      COLLECTION_ID,
-      Appwrite.ID.unique(),
-      { userId: user.$id, musicOn: state }
-    );
-  }
-}
+        function closeViewer() {
+            photoViewer.style.display = "none";
+        }
 
-async function loadMusicState() {
-  const user = await account.get();
-  const res = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTION_ID,
-    [Appwrite.Query.equal("userId", user.$id)]
-  );
-
-  if (res.total && res.documents[0].musicOn) toggleMusic();
-}
-
-/* ================= PHOTOS ================= */
-async function openPhotos() {
-  sidebar.classList.remove("show");
-  document.body.classList.remove("blurred");
-  window.location.href = 'photos.html';
-}
-
-/* AUTO LOGIN */
-account.get().then(onLoginSuccess).catch(()=>{});
-</script>
-
+        // Auto Login check
+        account.get().then(onLoginSuccess).catch(()=>{});
+    </script>
 </body>
 </html>
