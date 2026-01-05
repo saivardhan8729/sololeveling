@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Photos</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: black;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+#topBar {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  color: white;
+  background: rgba(0,0,0,0.9);
+}
+
+#backBtn {
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Grid */
+#photoGrid {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+#photoGrid img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Fullscreen viewer */
+#viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+#viewer img {
+  max-width: 95%;
+  max-height: 95%;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Top bar -->
+<div id="topBar">
+  <div id="backBtn" onclick="goBack()">← Back</div>
+</div>
+
+<!-- Photo Grid -->
+<div id="photoGrid"></div>
+
+<!-- Fullscreen Viewer -->
+<div id="viewer" onclick="closeViewer()">
+  <img id="viewerImg">
+</div>
+
+<!-- Appwrite SDK -->
+<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
+
+<script>
+/* ================= APPWRITE CONFIG ================= */
+const client = new Appwrite.Client()
+  .setEndpoint("https://nyc.cloud.appwrite.io/v1")
+  .setProject("695b05ea0019ea169d0f");
+
+const account = new Appwrite.Account(client);
+const storage = new Appwrite.Storage(client);
+
+const BUCKET_ID = "avatars";
+
+/* ================= AUTH CHECK ================= */
+account.get()
+  .then(loadPhotos)
+  .catch(() => {
+    window.location.href = "index.html"; // redirect if not logged in
+  });
+
+/* ================= LOAD PHOTOS ================= */
+async function loadPhotos() {
+  const grid = document.getElementById("photoGrid");
+  grid.innerHTML = "";
+
+  const files = await storage.listFiles(BUCKET_ID);
+
+  files.files.forEach(file => {
+    const img = document.createElement("img");
+    img.src = storage.getFileView(BUCKET_ID, file.$id);
+    img.onclick = () => openViewer(img.src);
+    grid.appendChild(img);
+  });
+}
+
+/* ================= VIEWER ================= */
+function openViewer(src) {
+  viewerImg.src = src;
+  viewer.style.display = "flex";
+}
+
+function closeViewer() {
+  viewer.style.display = "none";
+}
+
+/* ================= BACK ================= */
+function goBack() {
+  window.history.back();
+}
+</script>
+
+</body>
+</html>
