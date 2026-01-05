@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,63 +13,23 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-/* Main background after login */
 body {
   background: url("background.jpg") center/cover no-repeat;
-  transition: background 0.5s ease;
 }
 
-/* Equalizer container */
-.equalizer {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 70px;
-  height: 70px;
-  cursor: pointer;
-  display: none; /* hidden until login */
-}
-
-/* Bars animation */
-.bar {
-  transform-origin: bottom;
-  animation: bounce 1.2s infinite ease-in-out;
-}
-
-.bar:nth-child(1) { animation-delay: 0s; }
-.bar:nth-child(2) { animation-delay: 0.15s; }
-.bar:nth-child(3) { animation-delay: 0.3s; }
-.bar:nth-child(4) { animation-delay: 0.15s; }
-.bar:nth-child(5) { animation-delay: 0s; }
-
-/* Faster when playing */
-.playing .bar {
-  animation-duration: 0.6s;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-}
-
-/* Login overlay with background image */
+/* ================= LOGIN ================= */
 #loginOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: url("pic.jpg") center/cover no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
-  transition: opacity 0.5s ease;
 }
 
-/* Semi-transparent login box */
 #loginBox {
-  background: rgba(0, 0, 0, 0.7); 
+  background: rgba(0,0,0,0.7);
   padding: 30px;
   border-radius: 10px;
   color: white;
@@ -82,42 +43,162 @@ body {
   margin: 10px 0;
   border-radius: 5px;
   border: none;
-  font-size: 1em;
 }
 
 #loginBox button {
   padding: 10px 20px;
-  border: none;
   border-radius: 5px;
+  border: none;
   background: #4CAF50;
   color: white;
   cursor: pointer;
-  margin-top: 10px;
-  font-size: 1em;
 }
 
 #errorMsg {
   color: red;
-  margin-top: 10px;
-  font-size: 0.9em;
+}
+
+/* ================= EQUALIZER ================= */
+.equalizer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 70px;
+  height: 70px;
+  display: none;
+  cursor: pointer;
+}
+
+.bar {
+  transform-origin: bottom;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.playing .bar {
+  animation-duration: 0.6s;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+/* ================= MENU BUTTON ================= */
+#menuBtn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 64px;
+  height: 64px;
+  background: rgba(30,30,30,0.9);
+  border-radius: 50%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#menuBtn span {
+  position: absolute;
+  width: 26px;
+  height: 4px;
+  background: white;
+  border-radius: 4px;
+}
+
+#menuBtn span:first-child { transform: translateY(-6px); }
+#menuBtn span:last-child { transform: translateY(6px); }
+
+/* ================= SIDEBAR ================= */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -240px;
+  width: 220px;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+  padding-top: 100px;
+  transition: left 0.3s ease;
+  z-index: 999;
+}
+
+#sidebar.show {
+  left: 0;
+}
+
+.sidebar-item {
+  padding: 15px 25px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ================= PHOTO GRID ================= */
+#photoGrid {
+  position: fixed;
+  inset: 80px 10px 10px 10px;
+  display: none;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  z-index: 998;
+}
+
+#photoGrid img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ================= FULLSCREEN VIEW ================= */
+#photoViewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+#photoViewer img {
+  max-width: 95%;
+  max-height: 95%;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Login Overlay -->
+<!-- LOGIN -->
 <div id="loginOverlay">
   <div id="loginBox">
     <h2>Login</h2>
-    <input type="text" id="username" placeholder="Username"><br>
-    <input type="password" id="password" placeholder="Password"><br>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
     <button onclick="checkLogin()">Login</button>
     <div id="errorMsg"></div>
   </div>
 </div>
 
-<!-- SVG Equalizer -->
+<!-- MENU BUTTON -->
+<div id="menuBtn">
+  <span></span>
+  <span></span>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-item" onclick="openPhotos()">📷 Photos</div>
+</div>
+
+<!-- EQUALIZER -->
 <svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
   <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
   <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
@@ -126,52 +207,132 @@ body {
   <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
 </svg>
 
-<!-- Background music -->
+<!-- MUSIC -->
 <audio id="bgMusic" loop muted>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
+<!-- PHOTO GRID + VIEWER -->
+<div id="photoGrid"></div>
+
+<div id="photoViewer" onclick="closeViewer()">
+  <img id="photoViewerImg">
+</div>
+
+<!-- APPWRITE SDK -->
+<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
+
 <script>
-// Toggle music play/pause
+/* ================= APPWRITE ================= */
+const client = new Appwrite.Client()
+  .setEndpoint("https://nyc.cloud.appwrite.io/v1")
+  .setProject("695b05ea0019ea169d0f");
+
+const account = new Appwrite.Account(client);
+const databases = new Appwrite.Databases(client);
+const storage = new Appwrite.Storage(client);
+
+const DATABASE_ID = "695b05d0022af00758d";
+const COLLECTION_ID = "sololeveling";
+const BUCKET_ID = "avatars";
+
+/* ================= UI ================= */
+menuBtn.onclick = () => sidebar.classList.toggle("show");
+
+/* ================= AUTH ================= */
+async function checkLogin() {
+  try {
+    await account.createEmailPasswordSession(email.value, password.value);
+    onLoginSuccess();
+  } catch (e) {
+    errorMsg.textContent = e.message;
+  }
+}
+
+async function onLoginSuccess() {
+  loginOverlay.style.display = "none";
+  equalizer.style.display = "block";
+  menuBtn.style.display = "flex";
+  loadMusicState();
+}
+
+/* ================= MUSIC ================= */
 function toggleMusic() {
-  const music = document.getElementById("bgMusic");
-  const eq = document.getElementById("equalizer");
-
-  if (music.paused) {
-    music.muted = false;
-    music.play();
-    eq.classList.add("playing");
+  if (bgMusic.paused) {
+    bgMusic.muted = false;
+    bgMusic.play();
+    equalizer.classList.add("playing");
+    saveMusic(true);
   } else {
-    music.pause();
-    eq.classList.remove("playing");
+    bgMusic.pause();
+    equalizer.classList.remove("playing");
+    saveMusic(false);
   }
 }
 
-// Login logic
-function checkLogin() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const errorMsg = document.getElementById("errorMsg");
+/* ================= DATABASE ================= */
+async function saveMusic(state) {
+  const user = await account.get();
+  const res = await databases.listDocuments(
+    DATABASE_ID,
+    COLLECTION_ID,
+    [Appwrite.Query.equal("userId", user.$id)]
+  );
 
-  if (username === "sungjhinwoo" && password === "saikrithi") {
-    // Hide login overlay
-    const overlay = document.getElementById("loginOverlay");
-    overlay.style.opacity = "0";
-    setTimeout(() => overlay.style.display = "none", 500);
-
-    // Show equalizer
-    document.getElementById("equalizer").style.display = "block";
-
-    // Optionally start music automatically
-    const music = document.getElementById("bgMusic");
-    music.muted = false;
-    music.play();
-    
-    errorMsg.textContent = "";
+  if (res.total > 0) {
+    await databases.updateDocument(
+      DATABASE_ID,
+      COLLECTION_ID,
+      res.documents[0].$id,
+      { musicOn: state }
+    );
   } else {
-    errorMsg.textContent = "Incorrect username or password!";
+    await databases.createDocument(
+      DATABASE_ID,
+      COLLECTION_ID,
+      Appwrite.ID.unique(),
+      { userId: user.$id, musicOn: state }
+    );
   }
 }
+
+async function loadMusicState() {
+  const user = await account.get();
+  const res = await databases.listDocuments(
+    DATABASE_ID,
+    COLLECTION_ID,
+    [Appwrite.Query.equal("userId", user.$id)]
+  );
+
+  if (res.total && res.documents[0].musicOn) toggleMusic();
+}
+
+/* ================= PHOTOS ================= */
+async function openPhotos() {
+  sidebar.classList.remove("show");
+  photoGrid.style.display = "grid";
+  photoGrid.innerHTML = "";
+
+  const files = await storage.listFiles(BUCKET_ID);
+  files.files.forEach(f => {
+    const img = document.createElement("img");
+    img.src = storage.getFileView(BUCKET_ID, f.$id);
+    img.onclick = () => openViewer(img.src);
+    photoGrid.appendChild(img);
+  });
+}
+
+function openViewer(src) {
+  photoViewerImg.src = src;
+  photoViewer.style.display = "flex";
+}
+
+function closeViewer() {
+  photoViewer.style.display = "none";
+}
+
+/* AUTO LOGIN */
+account.get().then(onLoginSuccess).catch(()=>{});
 </script>
 
 </body>
