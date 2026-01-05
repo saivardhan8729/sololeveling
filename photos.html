@@ -2,60 +2,76 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Photos</title>
+<title>Photos - sololeveling</title>
 
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: black;
   font-family: Arial, sans-serif;
+  background: url("background.jpg") center/cover no-repeat;
 }
 
-/* Header */
-#topBar {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  padding: 0 15px;
-  color: white;
-  background: rgba(0,0,0,0.9);
-}
-
+/* ================= BACK BUTTON ================= */
 #backBtn {
-  font-size: 18px;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 64px;
+  height: 64px;
+  background: rgba(30,30,30,0.9);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  z-index: 1000;
 }
 
-/* Grid */
+#backBtn span {
+  position: absolute;
+  width: 26px;
+  height: 4px;
+  background: white;
+  border-radius: 4px;
+  transform: rotate(45deg);
+}
+
+#backBtn span:last-child {
+  transform: rotate(-45deg);
+}
+
+/* ================= PHOTO GRID ================= */
 #photoGrid {
-  padding: 10px;
+  position: fixed;
+  inset: 80px 10px 10px 10px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 10px;
+  z-index: 998;
 }
 
 #photoGrid img {
   width: 100%;
-  height: 120px;
+  height: 110px;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
 }
 
-/* Fullscreen viewer */
-#viewer {
+/* ================= FULLSCREEN VIEW ================= */
+#photoViewer {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.95);
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 1001;
 }
 
-#viewer img {
+#photoViewer img {
   max-width: 95%;
   max-height: 95%;
 }
@@ -64,69 +80,59 @@ html, body {
 
 <body>
 
-<!-- Top bar -->
-<div id="topBar">
-  <div id="backBtn" onclick="goBack()">← Back</div>
+<!-- BACK BUTTON -->
+<div id="backBtn" onclick="goBack()">
+  <span></span>
+  <span></span>
 </div>
 
-<!-- Photo Grid -->
+<!-- PHOTO GRID -->
 <div id="photoGrid"></div>
 
-<!-- Fullscreen Viewer -->
-<div id="viewer" onclick="closeViewer()">
-  <img id="viewerImg">
+<!-- FULLSCREEN VIEWER -->
+<div id="photoViewer" onclick="closeViewer()">
+  <img id="photoViewerImg">
 </div>
 
-<!-- Appwrite SDK -->
+<!-- APPWRITE SDK -->
 <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
 
 <script>
-/* ================= APPWRITE CONFIG ================= */
+/* ================= APPWRITE ================= */
 const client = new Appwrite.Client()
   .setEndpoint("https://nyc.cloud.appwrite.io/v1")
   .setProject("695b05ea0019ea169d0f");
 
-const account = new Appwrite.Account(client);
 const storage = new Appwrite.Storage(client);
 
 const BUCKET_ID = "avatars";
 
-/* ================= AUTH CHECK ================= */
-account.get()
-  .then(loadPhotos)
-  .catch(() => {
-    window.location.href = "index.html"; // redirect if not logged in
-  });
-
-/* ================= LOAD PHOTOS ================= */
+/* ================= FUNCTIONS ================= */
 async function loadPhotos() {
-  const grid = document.getElementById("photoGrid");
-  grid.innerHTML = "";
-
   const files = await storage.listFiles(BUCKET_ID);
-
-  files.files.forEach(file => {
+  files.files.forEach(f => {
     const img = document.createElement("img");
-    img.src = storage.getFileView(BUCKET_ID, file.$id);
+    img.src = storage.getFileView(BUCKET_ID, f.$id);
     img.onclick = () => openViewer(img.src);
-    grid.appendChild(img);
+    photoGrid.appendChild(img);
   });
 }
 
-/* ================= VIEWER ================= */
 function openViewer(src) {
-  viewerImg.src = src;
-  viewer.style.display = "flex";
+  photoViewerImg.src = src;
+  photoViewer.style.display = "flex";
 }
 
 function closeViewer() {
-  viewer.style.display = "none";
+  photoViewer.style.display = "none";
 }
 
-/* ================= BACK ================= */
 function goBack() {
-  window.history.back();
+  window.location.href = 'index.html'; // Assuming the main file is index.html
 }
+
+/* LOAD PHOTOS ON PAGE LOAD */
+loadPhotos();
 </script>
 
 </body>
