@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -137,40 +136,6 @@ body {
 .sidebar-item:hover {
   background: rgba(255,255,255,0.1);
 }
-
-/* ================= PHOTO GRID ================= */
-#photoGrid {
-  position: fixed;
-  inset: 80px 10px 10px 10px;
-  display: none;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-  z-index: 998;
-}
-
-#photoGrid img {
-  width: 100%;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* ================= FULLSCREEN VIEW ================= */
-#photoViewer {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.95);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1001;
-}
-
-#photoViewer img {
-  max-width: 95%;
-  max-height: 95%;
-}
 </style>
 </head>
 
@@ -195,7 +160,7 @@ body {
 
 <!-- SIDEBAR -->
 <div id="sidebar">
-  <div class="sidebar-item" onclick="openPhotos()">📷 Photos</div>
+  <div class="sidebar-item" onclick="openPhotosPage()">📷 Photos</div>
 </div>
 
 <!-- EQUALIZER -->
@@ -211,13 +176,6 @@ body {
 <audio id="bgMusic" loop muted>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
-
-<!-- PHOTO GRID + VIEWER -->
-<div id="photoGrid"></div>
-
-<div id="photoViewer" onclick="closeViewer()">
-  <img id="photoViewerImg">
-</div>
 
 <!-- APPWRITE SDK -->
 <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
@@ -239,6 +197,11 @@ const BUCKET_ID = "avatars";
 /* ================= UI ================= */
 menuBtn.onclick = () => sidebar.classList.toggle("show");
 
+/* Photos opens new page */
+function openPhotosPage() {
+  window.location.href = "photos.html";
+}
+
 /* ================= AUTH ================= */
 async function checkLogin() {
   try {
@@ -257,6 +220,9 @@ async function onLoginSuccess() {
 }
 
 /* ================= MUSIC ================= */
+const bgMusic = document.getElementById("bgMusic");
+const equalizer = document.getElementById("equalizer");
+
 function toggleMusic() {
   if (bgMusic.paused) {
     bgMusic.muted = false;
@@ -305,30 +271,6 @@ async function loadMusicState() {
   );
 
   if (res.total && res.documents[0].musicOn) toggleMusic();
-}
-
-/* ================= PHOTOS ================= */
-async function openPhotos() {
-  sidebar.classList.remove("show");
-  photoGrid.style.display = "grid";
-  photoGrid.innerHTML = "";
-
-  const files = await storage.listFiles(BUCKET_ID);
-  files.files.forEach(f => {
-    const img = document.createElement("img");
-    img.src = storage.getFileView(BUCKET_ID, f.$id);
-    img.onclick = () => openViewer(img.src);
-    photoGrid.appendChild(img);
-  });
-}
-
-function openViewer(src) {
-  photoViewerImg.src = src;
-  photoViewer.style.display = "flex";
-}
-
-function closeViewer() {
-  photoViewer.style.display = "none";
 }
 
 /* AUTO LOGIN */
