@@ -1,268 +1,178 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-    <meta charset="UTF-8">  
-    <title>Solo Leveling</title>  
-    <style>  
-        html, body { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: #000; }  #main-bg {  
-        position: fixed;  
-        inset: 0;  
-        background: url("background.jpg") center/cover no-repeat;  
-        transition: filter 0.4s ease, transform 0.4s ease;  
-        z-index: 1;  
-    }  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>sololeveling</title>
 
-    .is-blurred { filter: blur(15px) brightness(0.5); transform: scale(1.05); }  
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
 
-    /* ================= LOGIN ================= */  
-    #loginOverlay {  
-        position: fixed;  
-        inset: 0;  
-        background: url("pic.jpg") center/cover no-repeat;  
-        display: flex;  
-        justify-content: center;  
-        align-items: center;  
-        z-index: 9999;  
-    }  
-    #loginBox {  
-        background: rgba(0,0,0,0.85);  
-        padding: 40px;  
-        border-radius: 15px;  
-        color: white;  
-        width: 320px;  
-        text-align: center;  
-        backdrop-filter: blur(10px);  
-        border: 1px solid rgba(255,255,255,0.1);  
-    }  
-    #loginBox input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; box-sizing: border-box; background: #222; color: white; }  
-    #loginBox button { width: 100%; padding: 12px; border-radius: 5px; border: none; background: #2563eb; color: white; cursor: pointer; font-weight: bold; }  
+/* Main background after login */
+body {
+  background: url("background.jpg") center/cover no-repeat;
+  transition: background 0.5s ease;
+}
 
-    /* ================= UI ELEMENTS ================= */  
-    #menuBtn {  
-        position: fixed;  
-        top: 25px;  
-        left: 25px;  
-        width: 50px;  
-        height: 50px;  
-        background: rgba(0,0,0,0.8);  
-        border-radius: 12px;  
-        display: none; /* Shown after login */  
-        flex-direction: column;  
-        justify-content: center;  
-        align-items: center;  
-        cursor: pointer;  
-        z-index: 2500;  
-        gap: 5px;  
-    }  
-    #menuBtn span { width: 25px; height: 3px; background: white; border-radius: 2px; }  
+/* Equalizer container */
+.equalizer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  display: none; /* hidden until login */
+}
 
-    #sidebar {  
-        position: fixed;  
-        top: 0;  
-        left: -280px;  
-        width: 260px;  
-        height: 100%;  
-        background: rgba(10, 10, 10, 0.98);  
-        padding-top: 100px;  
-        transition: left 0.3s ease;  
-        z-index: 2400;  
-    }  
-    #sidebar.show { left: 0; }  
-    .sidebar-item { padding: 18px 30px; color: #ccc; font-size: 18px; cursor: pointer; }  
-    .sidebar-item:hover { color: white; background: rgba(255,255,255,0.1); }  
+/* Bars animation */
+.bar {
+  transform-origin: bottom;
+  animation: bounce 1.2s infinite ease-in-out;
+}
 
-    /* ================= PHOTO PAGE ================= */  
-    #photoPage {  
-        position: fixed;  
-        inset: 0;  
-        background: #0a0a0a;  
-        z-index: 3000; /* Higher than sidebar and menuBtn */  
-        display: none;  
-        flex-direction: column;  
-        overflow-y: auto;  
-        padding: 40px;  
-    }  
-    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }  
-    .header-row h1 { color: white; margin: 0; letter-spacing: 2px; }  
-    .close-grid { color: white; font-size: 40px; cursor: pointer; line-height: 1; }  
+.bar:nth-child(1) { animation-delay: 0s; }
+.bar:nth-child(2) { animation-delay: 0.15s; }
+.bar:nth-child(3) { animation-delay: 0.3s; }
+.bar:nth-child(4) { animation-delay: 0.15s; }
+.bar:nth-child(5) { animation-delay: 0s; }
 
-    #grid-container {  
-        display: grid;  
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));  
-        gap: 15px;  
-    }  
-    #grid-container img {  
-        width: 100%;  
-        aspect-ratio: 1/1;  
-        object-fit: cover;  
-        border-radius: 8px;  
-        cursor: pointer;  
-        transition: 0.3s;  
-    }  
-    #grid-container img:hover { transform: scale(1.03); filter: brightness(1.2); }  
+/* Faster when playing */
+.playing .bar {
+  animation-duration: 0.6s;
+}
 
-    /* ================= EQUALIZER ================= */  
-    #equalizer {  
-        position: fixed;  
-        bottom: 25px;  
-        left: 25px;  
-        width: 50px;  
-        height: 50px;  
-        z-index: 2500;  
-        cursor: pointer;  
-        display: none; /* Shown after login */  
-    }  
-    .bar { transform-origin: bottom; animation: bounce 1.2s infinite ease-in-out; }  
-    .playing .bar { animation-duration: 0.6s; }  
-    @keyframes bounce { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }  
+@keyframes bounce {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
 
-    /* ================= VIEWER ================= */  
-    #photoViewer {  
-        position: fixed;  
-        inset: 0;  
-        background: rgba(0,0,0,0.95);  
-        display: none;  
-        justify-content: center;  
-        align-items: center;  
-        z-index: 4000;  
-    }  
-    #photoViewer img { max-width: 95%; max-height: 90vh; }  
+/* Login overlay with background image */
+#loginOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("pic.jpg") center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  transition: opacity 0.5s ease;
+}
+
+/* Semi-transparent login box */
+#loginBox {
+  background: rgba(0, 0, 0, 0.7); 
+  padding: 30px;
+  border-radius: 10px;
+  color: white;
+  width: 300px;
+  text-align: center;
+}
+
+#loginBox input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: none;
+  font-size: 1em;
+}
+
+#loginBox button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 1em;
+}
+
+#errorMsg {
+  color: red;
+  margin-top: 10px;
+  font-size: 0.9em;
+}
 </style>
+</head>
 
-</head>  
-<body>  <div id="main-bg"></div>  
+<body>
 
-<div id="loginOverlay">  
-    <div id="loginBox">  
-        <h2>System Login</h2>  
-        <input type="email" id="email" placeholder="Hunter Email">  
-        <input type="password" id="password" placeholder="Access Key">  
-        <button onclick="checkLogin()">Authenticate</button>  
-        <div id="errorMsg"></div>  
-    </div>  
-</div>  
+<!-- Login Overlay -->
+<div id="loginOverlay">
+  <div id="loginBox">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="checkLogin()">Login</button>
+    <div id="errorMsg"></div>
+  </div>
+</div>
 
-<div id="menuBtn"><span></span><span></span><span></span></div>  
+<!-- SVG Equalizer -->
+<svg class="equalizer" id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
+  <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>
+  <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
+</svg>
 
-<div id="sidebar">  
-    <div class="sidebar-item" onclick="openPhotos()">📷 Dungeon Gallery</div>  
-    <div class="sidebar-item" onclick="location.reload()">🔄 Logout</div>  
-</div>  
+<!-- Background music -->
+<audio id="bgMusic" loop muted>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
-<svg id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">  
-    <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>  
-</svg>  
+<script>
+// Toggle music play/pause
+function toggleMusic() {
+  const music = document.getElementById("bgMusic");
+  const eq = document.getElementById("equalizer");
 
-<div id="photoPage">  
-    <div class="header-row">  
-        <h1>HUNTER ARCHIVE</h1>  
-        <span class="close-grid" onclick="closePhotos()">×</span>  
-    </div>  
-    <div id="grid-container"></div>  
-</div>  
+  if (music.paused) {
+    music.muted = false;
+    music.play();
+    eq.classList.add("playing");
+  } else {
+    music.pause();
+    eq.classList.remove("playing");
+  }
+}
 
-<div id="photoViewer" onclick="closeViewer()">  
-    <img id="photoViewerImg">  
-</div>  
+// Login logic
+function checkLogin() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const errorMsg = document.getElementById("errorMsg");
 
-<audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>  
+  if (username === "sungjhinwoo" && password === "saikrithi") {
+    // Hide login overlay
+    const overlay = document.getElementById("loginOverlay");
+    overlay.style.opacity = "0";
+    setTimeout(() => overlay.style.display = "none", 500);
 
-<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>  
-<script>  
-    const client = new Appwrite.Client()  
-        .setEndpoint("https://nyc.cloud.appwrite.io/v1")  
-        .setProject("695b05ea0019ea169d0f");  
+    // Show equalizer
+    document.getElementById("equalizer").style.display = "block";
 
-    const account = new Appwrite.Account(client);  
-    const storage = new Appwrite.Storage(client);  
-    const BUCKET_ID = "avatars";  
-
-    const bg = document.getElementById('main-bg');  
-    const side = document.getElementById('sidebar');  
-    const mBtn = document.getElementById('menuBtn');  
-    const eq = document.getElementById('equalizer');  
-    const music = document.getElementById('bgMusic');  
-
-    // Toggle Sidebar  
-    mBtn.onclick = () => {  
-        const isShowing = side.classList.toggle("show");  
-        bg.classList.toggle("is-blurred", isShowing);  
-    };  
-
-    // 1. Music Fix: Browser requires user interaction  
-    function toggleMusic() {  
-        if (music.paused) {  
-            music.play().catch(e => console.log("Playback failed:", e));  
-            eq.classList.add("playing");  
-        } else {  
-            music.pause();  
-            eq.classList.remove("playing");  
-        }  
-    }  
-
-    async function checkLogin() {  
-        try {  
-            await account.createEmailPasswordSession(email.value, password.value);  
-            onLoginSuccess();  
-        } catch (e) { document.getElementById('errorMsg').textContent = e.message; }  
-    }  
-
-    function onLoginSuccess() {  
-        document.getElementById('loginOverlay').style.display = "none";  
-        mBtn.style.display = "flex";  
-        eq.style.display = "block";  
-        // Auto-play music on first click if desired  
-    }  
-
-    // 2 & 3. Photos Page and Appwrite Fix  
-    async function openPhotos() {  
-        // Hide Sidebar and Menu so they don't overlap the "Photos Page"  
-        side.classList.remove("show");  
-        mBtn.style.display = "none";   
-
-        const photoPage = document.getElementById('photoPage');  
-        const container = document.getElementById('grid-container');  
-
-        photoPage.style.display = "flex";  
-        container.innerHTML = "<p style='color:white'>Loading Assets...</p>";  
-
-        try {  
-            const response = await storage.listFiles(BUCKET_ID);  
-            container.innerHTML = "";  
-
-            response.files.forEach(file => {  
-                const img = document.createElement("img");  
-                // Use getFileView or getFileView depending on SDK version  
-                img.src = storage.getFileView(BUCKET_ID, file.$id);  
-                img.onclick = () => openViewer(img.src);  
-                container.appendChild(img);  
-            });  
-        } catch (e) {   
-            container.innerHTML = "<p style='color:red'>Failed to connect to Archive.</p>";  
-            console.error(e);  
-        }  
-    }  
-
-    function closePhotos() {  
-        document.getElementById('photoPage').style.display = "none";  
-        mBtn.style.display = "flex"; // Show menu button again  
-        bg.classList.remove("is-blurred");  
-    }  
-
-    function openViewer(src) {  
-        document.getElementById('photoViewerImg').src = src;  
-        document.getElementById('photoViewer').style.display = "flex";  
-    }  
-
-    function closeViewer() {  
-        document.getElementById('photoViewer').style.display = "none";  
-    }  
-
-    account.get().then(onLoginSuccess).catch(()=>{});  
+    // Optionally start music automatically
+    const music = document.getElementById("bgMusic");
+    music.muted = false;
+    music.play();
+    
+    errorMsg.textContent = "";
+  } else {
+    errorMsg.textContent = "Incorrect username or password!";
+  }
+}
 </script>
 
-</body>  
+</body>
 </html>
