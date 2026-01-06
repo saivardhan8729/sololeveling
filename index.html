@@ -1,268 +1,254 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-    <meta charset="UTF-8">  
-    <title>Solo Leveling</title>  
-    <style>  
-        html, body { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: #000; }  #main-bg {  
-        position: fixed;  
-        inset: 0;  
-        background: url("background.jpg") center/cover no-repeat;  
-        transition: filter 0.4s ease, transform 0.4s ease;  
-        z-index: 1;  
-    }  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Solo Leveling</title>
 
-    .is-blurred { filter: blur(15px) brightness(0.5); transform: scale(1.05); }  
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    /* ================= LOGIN ================= */  
-    #loginOverlay {  
-        position: fixed;  
-        inset: 0;  
-        background: url("pic.jpg") center/cover no-repeat;  
-        display: flex;  
-        justify-content: center;  
-        align-items: center;  
-        z-index: 9999;  
-    }  
-    #loginBox {  
-        background: rgba(0,0,0,0.85);  
-        padding: 40px;  
-        border-radius: 15px;  
-        color: white;  
-        width: 320px;  
-        text-align: center;  
-        backdrop-filter: blur(10px);  
-        border: 1px solid rgba(255,255,255,0.1);  
-    }  
-    #loginBox input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; box-sizing: border-box; background: #222; color: white; }  
-    #loginBox button { width: 100%; padding: 12px; border-radius: 5px; border: none; background: #2563eb; color: white; cursor: pointer; font-weight: bold; }  
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+    background: black;
+}
 
-    /* ================= UI ELEMENTS ================= */  
-    #menuBtn {  
-        position: fixed;  
-        top: 25px;  
-        left: 25px;  
-        width: 50px;  
-        height: 50px;  
-        background: rgba(0,0,0,0.8);  
-        border-radius: 12px;  
-        display: none; /* Shown after login */  
-        flex-direction: column;  
-        justify-content: center;  
-        align-items: center;  
-        cursor: pointer;  
-        z-index: 2500;  
-        gap: 5px;  
-    }  
-    #menuBtn span { width: 25px; height: 3px; background: white; border-radius: 2px; }  
+/* ================= VIDEO BACKGROUND ================= */
+#main-bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    background: black;
+    transition: filter 0.4s ease;
+}
 
-    #sidebar {  
-        position: fixed;  
-        top: 0;  
-        left: -280px;  
-        width: 260px;  
-        height: 100%;  
-        background: rgba(10, 10, 10, 0.98);  
-        padding-top: 100px;  
-        transition: left 0.3s ease;  
-        z-index: 2400;  
-    }  
-    #sidebar.show { left: 0; }  
-    .sidebar-item { padding: 18px 30px; color: #ccc; font-size: 18px; cursor: pointer; }  
-    .sidebar-item:hover { color: white; background: rgba(255,255,255,0.1); }  
+.is-blurred {
+    filter: blur(15px) brightness(0.5);
+}
 
-    /* ================= PHOTO PAGE ================= */  
-    #photoPage {  
-        position: fixed;  
-        inset: 0;  
-        background: #0a0a0a;  
-        z-index: 3000; /* Higher than sidebar and menuBtn */  
-        display: none;  
-        flex-direction: column;  
-        overflow-y: auto;  
-        padding: 40px;  
-    }  
-    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }  
-    .header-row h1 { color: white; margin: 0; letter-spacing: 2px; }  
-    .close-grid { color: white; font-size: 40px; cursor: pointer; line-height: 1; }  
+/* ================= LOGIN ================= */
+#loginOverlay {
+    position: fixed;
+    inset: 0;
+    background: url("pic.jpg") center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
 
-    #grid-container {  
-        display: grid;  
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));  
-        gap: 15px;  
-    }  
-    #grid-container img {  
-        width: 100%;  
-        aspect-ratio: 1/1;  
-        object-fit: cover;  
-        border-radius: 8px;  
-        cursor: pointer;  
-        transition: 0.3s;  
-    }  
-    #grid-container img:hover { transform: scale(1.03); filter: brightness(1.2); }  
+#loginBox {
+    background: rgba(0,0,0,0.85);
+    padding: 40px;
+    border-radius: 15px;
+    color: white;
+    width: 320px;
+    text-align: center;
+}
 
-    /* ================= EQUALIZER ================= */  
-    #equalizer {  
-        position: fixed;  
-        bottom: 25px;  
-        left: 25px;  
-        width: 50px;  
-        height: 50px;  
-        z-index: 2500;  
-        cursor: pointer;  
-        display: none; /* Shown after login */  
-    }  
-    .bar { transform-origin: bottom; animation: bounce 1.2s infinite ease-in-out; }  
-    .playing .bar { animation-duration: 0.6s; }  
-    @keyframes bounce { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }  
+#loginBox input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    background: #222;
+    color: white;
+}
 
-    /* ================= VIEWER ================= */  
-    #photoViewer {  
-        position: fixed;  
-        inset: 0;  
-        background: rgba(0,0,0,0.95);  
-        display: none;  
-        justify-content: center;  
-        align-items: center;  
-        z-index: 4000;  
-    }  
-    #photoViewer img { max-width: 95%; max-height: 90vh; }  
+#loginBox button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* ================= MENU ================= */
+#menuBtn {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    width: 50px;
+    height: 50px;
+    background: rgba(0,0,0,0.8);
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 2500;
+}
+
+#menuBtn span {
+    width: 25px;
+    height: 3px;
+    background: white;
+}
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 260px;
+    height: 100%;
+    background: rgba(10,10,10,0.98);
+    padding-top: 100px;
+    transition: left 0.3s ease;
+    z-index: 2400;
+}
+
+#sidebar.show {
+    left: 0;
+}
+
+.sidebar-item {
+    padding: 18px 30px;
+    color: #ccc;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.sidebar-item:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* ================= EQUALIZER ================= */
+#equalizer {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    width: 50px;
+    height: 50px;
+    display: none;
+    z-index: 2500;
+    cursor: pointer;
+}
+
+.bar {
+    transform-origin: bottom;
+    animation: bounce 1.2s infinite ease-in-out;
+}
+
+.playing .bar {
+    animation-duration: 0.6s;
+}
+
+@keyframes bounce {
+    0%,100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
+}
 </style>
+</head>
 
-</head>  
-<body>  <div id="main-bg"></div>  
+<body>
 
-<div id="loginOverlay">  
-    <div id="loginBox">  
-        <h2>System Login</h2>  
-        <input type="email" id="email" placeholder="Hunter Email">  
-        <input type="password" id="password" placeholder="Access Key">  
-        <button onclick="checkLogin()">Authenticate</button>  
-        <div id="errorMsg"></div>  
-    </div>  
-</div>  
+<!-- VIDEO BACKGROUND -->
+<video id="main-bg-video" autoplay muted loop playsinline>
+    <source src="background.mp4" type="video/mp4">
+</video>
 
-<div id="menuBtn"><span></span><span></span><span></span></div>  
+<!-- LOGIN -->
+<div id="loginOverlay">
+    <div id="loginBox">
+        <h2>System Login</h2>
+        <input type="email" id="email" placeholder="Hunter Email">
+        <input type="password" id="password" placeholder="Access Key">
+        <button onclick="onLoginSuccess()">Authenticate</button>
+    </div>
+</div>
 
-<div id="sidebar">  
-    <div class="sidebar-item" onclick="openPhotos()">📷 Dungeon Gallery</div>  
-    <div class="sidebar-item" onclick="location.reload()">🔄 Logout</div>  
-</div>  
+<!-- MENU -->
+<div id="menuBtn">
+    <span></span><span></span><span></span>
+</div>
 
-<svg id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">  
-    <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>  
-    <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>  
-</svg>  
+<div id="sidebar">
+    <div class="sidebar-item">📷 Dungeon Gallery</div>
+    <div class="sidebar-item" onclick="location.reload()">🔄 Logout</div>
+</div>
 
-<div id="photoPage">  
-    <div class="header-row">  
-        <h1>HUNTER ARCHIVE</h1>  
-        <span class="close-grid" onclick="closePhotos()">×</span>  
-    </div>  
-    <div id="grid-container"></div>  
-</div>  
+<!-- MUSIC -->
+<svg id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
+    <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
+    <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
+    <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
+    <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>
+    <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
+</svg>
 
-<div id="photoViewer" onclick="closeViewer()">  
-    <img id="photoViewerImg">  
-</div>  
+<audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
 
-<audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>  
+<script>
+const video = document.getElementById('main-bg-video');
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+const eq = document.getElementById('equalizer');
+const music = document.getElementById('bgMusic');
 
-<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>  
-<script>  
-    const client = new Appwrite.Client()  
-        .setEndpoint("https://nyc.cloud.appwrite.io/v1")  
-        .setProject("695b05ea0019ea169d0f");  
+/* ===== Dynamic Aspect Ratio Matching ===== */
+function fitVideo() {
+    const videoRatio = video.videoWidth / video.videoHeight;
+    const screenRatio = window.innerWidth / window.innerHeight;
 
-    const account = new Appwrite.Account(client);  
-    const storage = new Appwrite.Storage(client);  
-    const BUCKET_ID = "695b0d35001c89df691f";  
+    if (screenRatio > videoRatio) {
+        video.style.width = "100%";
+        video.style.height = "auto";
+    } else {
+        video.style.width = "auto";
+        video.style.height = "100%";
+    }
+}
 
-    const bg = document.getElementById('main-bg');  
-    const side = document.getElementById('sidebar');  
-    const mBtn = document.getElementById('menuBtn');  
-    const eq = document.getElementById('equalizer');  
-    const music = document.getElementById('bgMusic');  
+video.addEventListener("loadedmetadata", fitVideo);
+window.addEventListener("resize", fitVideo);
 
-    // Toggle Sidebar  
-    mBtn.onclick = () => {  
-        const isShowing = side.classList.toggle("show");  
-        bg.classList.toggle("is-blurred", isShowing);  
-    };  
+/* iOS Playback Fix */
+document.addEventListener('touchstart', () => {
+    if (video.paused) video.play();
+}, { once: true });
 
-    // 1. Music Fix: Browser requires user interaction  
-    function toggleMusic() {  
-        if (music.paused) {  
-            music.play().catch(e => console.log("Playback failed:", e));  
-            eq.classList.add("playing");  
-        } else {  
-            music.pause();  
-            eq.classList.remove("playing");  
-        }  
-    }  
+/* Menu */
+menuBtn.onclick = () => {
+    const show = sidebar.classList.toggle("show");
+    video.classList.toggle("is-blurred", show);
+};
 
-    async function checkLogin() {  
-        try {  
-            await account.createEmailPasswordSession(email.value, password.value);  
-            onLoginSuccess();  
-        } catch (e) { document.getElementById('errorMsg').textContent = e.message; }  
-    }  
+/* Music */
+function toggleMusic() {
+    if (music.paused) {
+        music.play();
+        eq.classList.add("playing");
+    } else {
+        music.pause();
+        eq.classList.remove("playing");
+    }
+}
 
-    function onLoginSuccess() {  
-        document.getElementById('loginOverlay').style.display = "none";  
-        mBtn.style.display = "flex";  
-        eq.style.display = "block";  
-        // Auto-play music on first click if desired  
-    }  
-
-    // 2 & 3. Photos Page and Appwrite Fix  
-    async function openPhotos() {  
-        // Hide Sidebar and Menu so they don't overlap the "Photos Page"  
-        side.classList.remove("show");  
-        mBtn.style.display = "none";   
-
-        const photoPage = document.getElementById('photoPage');  
-        const container = document.getElementById('grid-container');  
-
-        photoPage.style.display = "flex";  
-        container.innerHTML = "<p style='color:white'>Loading Assets...</p>";  
-
-        try {  
-            const response = await storage.listFiles(BUCKET_ID);  
-            container.innerHTML = "";  
-
-            response.files.forEach(file => {  
-                const img = document.createElement("img");  
-                // Use getFileView or getFileView depending on SDK version  
-                img.src = storage.getFileView(BUCKET_ID, file.$id);  
-                img.onclick = () => openViewer(img.src);  
-                container.appendChild(img);  
-            });  
-        } catch (e) {   
-            container.innerHTML = "<p style='color:red'>Failed to connect to Archive.</p>";  
-            console.error(e);  
-        }  
-    }  
-
-    function closePhotos() {  
-        document.getElementById('photoPage').style.display = "none";  
-        mBtn.style.display = "flex"; // Show menu button again  
-        bg.classList.remove("is-blurred");  
-    }  
-
-    function openViewer(src) {  
-        document.getElementById('photoViewerImg').src = src;  
-        document.getElementById('photoViewer').style.display = "flex";  
-    }  
-
-    function closeViewer() {  
-        document.getElementById('photoViewer').style.display = "none";  
-    }  
-
-    account.get().then(onLoginSuccess).catch(()=>{});  
+/* Login */
+function onLoginSuccess() {
+    document.getElementById('loginOverlay').style.display = "none";
+    menuBtn.style.display = "flex";
+    eq.style.display = "block";
+}
 </script>
 
-</body>  
+</body>
 </html>
