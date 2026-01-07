@@ -2,39 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Solo Leveling</title>
+<title>Solo Leveling – Shadow Monarch</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <style>
+/* ================= THEME ================= */
+:root {
+    --sl-purple: #7c3aed;
+    --sl-glow: rgba(124,58,237,.6);
+    --sl-dark: #020617;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     overflow: hidden;
     font-family: 'Segoe UI', sans-serif;
-    background: black;
+    background: radial-gradient(circle at top, #0b0b2a, #000);
 }
 
-/* ===== BACKGROUND VIDEO ===== */
+/* ================= BACKGROUND VIDEO ================= */
 #main-bg-video {
     position: fixed;
     top: 50%;
     left: 50%;
     max-width: 100%;
     max-height: 100%;
-    width: auto;
-    height: auto;
     transform: translate(-50%, -50%);
     z-index: 1;
-    transition: filter 0.4s ease;
+}
+
+#systemOverlay {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at center, transparent 40%, rgba(0,0,0,.95)),
+        linear-gradient(180deg, rgba(124,58,237,.2), rgba(0,0,0,.9));
+    z-index: 2;
+    pointer-events: none;
 }
 
 .is-blurred {
-    filter: blur(15px) brightness(0.5);
+    filter: blur(15px) brightness(.4);
 }
 
-/* ===== LOGIN ===== */
+/* ================= LOGIN ================= */
 #loginOverlay {
     position: fixed;
     inset: 0;
@@ -46,43 +60,32 @@ html, body {
 }
 
 #loginBox {
-    background: rgba(0,0,0,0.85);
+    background: rgba(5,5,16,.95);
     padding: 40px;
     border-radius: 15px;
     color: white;
     width: 320px;
     text-align: center;
+    border: 1px solid var(--sl-purple);
+    box-shadow: 0 0 40px var(--sl-glow);
+    animation: pulse 2s infinite alternate;
 }
 
-#loginBox input, #loginBox button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 5px;
-    border: none;
+@keyframes pulse {
+    from { box-shadow: 0 0 15px var(--sl-glow); }
+    to { box-shadow: 0 0 45px var(--sl-glow); }
 }
 
-#loginBox input {
-    background: #222;
-    color: white;
-}
-
-#loginBox button {
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* ===== MENU ===== */
+/* ================= MENU ================= */
 #menuBtn {
     position: fixed;
     top: 25px;
     left: 25px;
     width: 50px;
     height: 50px;
-    background: rgba(0,0,0,0.8);
+    background: linear-gradient(135deg,#1e1b4b,#020617);
     border-radius: 12px;
+    border: 1px solid var(--sl-purple);
     display: none;
     flex-direction: column;
     justify-content: center;
@@ -90,30 +93,31 @@ html, body {
     gap: 5px;
     cursor: pointer;
     z-index: 2500;
+    box-shadow: 0 0 25px var(--sl-glow);
 }
 
 #menuBtn span {
     width: 25px;
     height: 3px;
-    background: white;
+    background: var(--sl-purple);
 }
 
-/* ===== SIDEBAR ===== */
+/* ================= SIDEBAR ================= */
 #sidebar {
     position: fixed;
     top: 0;
     left: -280px;
     width: 260px;
     height: 100%;
-    background: rgba(10,10,10,0.98);
+    background: linear-gradient(180deg,#020617,#050510);
     padding-top: 100px;
-    transition: left 0.3s ease;
+    transition: .3s;
     z-index: 2400;
+    border-right: 1px solid var(--sl-purple);
+    box-shadow: 10px 0 40px rgba(124,58,237,.3);
 }
 
-#sidebar.show {
-    left: 0;
-}
+#sidebar.show { left: 0; }
 
 .sidebar-item {
     padding: 18px 30px;
@@ -122,16 +126,21 @@ html, body {
     cursor: pointer;
 }
 
-.sidebar-item:hover {
-    background: rgba(255,255,255,0.1);
-    color: white;
+.sidebar-item::before {
+    content: "◆ ";
+    color: var(--sl-purple);
 }
 
-/* ===== PAGES ===== */
+.sidebar-item:hover {
+    color: white;
+    background: rgba(124,58,237,.1);
+}
+
+/* ================= PAGES ================= */
 .page {
     position: fixed;
     inset: 0;
-    background: #0a0a0a;
+    background: #020617;
     z-index: 3000;
     display: none;
     flex-direction: column;
@@ -147,83 +156,77 @@ html, body {
 }
 
 .header-row h1 {
-    color: white;
-    margin: 0;
-    letter-spacing: 2px;
+    color: #e9d5ff;
+    letter-spacing: 4px;
+    text-shadow: 0 0 15px var(--sl-glow);
 }
 
 .close-grid {
-    color: white;
     font-size: 40px;
     cursor: pointer;
+    color: white;
 }
 
+/* ================= GRIDS ================= */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
     gap: 15px;
-}
-
-.grid img {
-    width: 100%;
-    border-radius: 8px;
-    cursor: pointer;
 }
 
 .video-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill,minmax(300px,1fr));
     gap: 25px;
 }
 
+.grid img,
 .video-grid video {
     width: 100%;
     border-radius: 12px;
-    background: black;
-}
-
-/* ===== EQUALIZER ===== */
-#equalizer {
-    position: fixed;
-    bottom: 25px;
-    left: 25px;
-    width: 50px;
-    height: 50px;
-    display: none;
     cursor: pointer;
-    z-index: 2500;
+    border: 1px solid rgba(124,58,237,.4);
+    box-shadow: 0 0 20px rgba(124,58,237,.3);
+    transition: .3s;
 }
 
-.bar {
-    transform-origin: bottom;
-    animation: bounce 1.2s infinite ease-in-out;
+.grid img:hover,
+.video-grid video:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 40px var(--sl-glow);
 }
 
-.playing .bar {
-    animation-duration: 0.6s;
+/* ================= VIDEO VIEWER ================= */
+#videoViewer {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle,#020617,#000);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 4000;
 }
 
-@keyframes bounce {
-    0%,100% { transform: scaleY(0.3); }
-    50% { transform: scaleY(1); }
+#videoViewer video {
+    max-width: 95%;
+    max-height: 90vh;
 }
 </style>
 </head>
 
 <body>
 
-<!-- BACKGROUND VIDEO -->
+<!-- BACKGROUND -->
 <video id="main-bg-video" autoplay muted loop playsinline>
     <source src="background.mp4" type="video/mp4">
 </video>
+<div id="systemOverlay"></div>
 
 <!-- LOGIN -->
 <div id="loginOverlay">
     <div id="loginBox">
-        <h2>System Login</h2>
-        <input type="email" placeholder="Hunter Email">
-        <input type="password" placeholder="Access Key">
-        <button onclick="onLoginSuccess()">Authenticate</button>
+        <h2>SYSTEM AUTHORIZATION</h2>
+        <button onclick="onLoginSuccess()">ENTER</button>
     </div>
 </div>
 
@@ -231,15 +234,15 @@ html, body {
 <div id="menuBtn"><span></span><span></span><span></span></div>
 
 <div id="sidebar">
-    <div class="sidebar-item" onclick="openPhotos()">📷 Dungeon Gallery</div>
-    <div class="sidebar-item" onclick="openVideos()">🎬 Hunter Videos</div>
-    <div class="sidebar-item" onclick="location.reload()">🔄 Logout</div>
+    <div class="sidebar-item" onclick="openPhotos()">Dungeon Gallery</div>
+    <div class="sidebar-item" onclick="openVideos()">Hunter Videos</div>
+    <div class="sidebar-item" onclick="location.reload()">Logout</div>
 </div>
 
 <!-- PHOTO PAGE -->
 <div id="photoPage" class="page">
     <div class="header-row">
-        <h1>HUNTER ARCHIVE</h1>
+        <h1>DUNGEON ARCHIVE</h1>
         <span class="close-grid" onclick="closePage('photoPage')">×</span>
     </div>
     <div id="photoGrid" class="grid"></div>
@@ -254,124 +257,99 @@ html, body {
     <div id="videoGrid" class="video-grid"></div>
 </div>
 
-<!-- MUSIC -->
-<svg id="equalizer" viewBox="0 0 100 100" onclick="toggleMusic()">
-    <rect class="bar" x="10" y="20" width="10" height="60" fill="white"/>
-    <rect class="bar" x="30" y="20" width="10" height="60" fill="white"/>
-    <rect class="bar" x="50" y="20" width="10" height="60" fill="white"/>
-    <rect class="bar" x="70" y="20" width="10" height="60" fill="white"/>
-    <rect class="bar" x="90" y="20" width="10" height="60" fill="white"/>
-</svg>
-
-<audio id="bgMusic" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
+<!-- VIDEO VIEWER -->
+<div id="videoViewer" onclick="closeVideoViewer()">
+    <video id="videoViewerPlayer" controls playsinline></video>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
 <script>
-/* ===== BACKGROUND VIDEO FIT ===== */
-const bgVideo = document.getElementById("main-bg-video");
-
-function fitVideo() {
-    const vr = bgVideo.videoWidth / bgVideo.videoHeight;
-    const sr = window.innerWidth / window.innerHeight;
-    if (sr > vr) {
-        bgVideo.style.width = "100%";
-        bgVideo.style.height = "auto";
-    } else {
-        bgVideo.style.width = "auto";
-        bgVideo.style.height = "100%";
-    }
+/* ========== VIDEO FIT ========== */
+const bg = document.getElementById("main-bg-video");
+function fit() {
+    const vr = bg.videoWidth/bg.videoHeight;
+    const sr = innerWidth/innerHeight;
+    bg.style.width = sr>vr ? "100%" : "auto";
+    bg.style.height = sr>vr ? "auto" : "100%";
 }
-bgVideo.addEventListener("loadedmetadata", fitVideo);
-window.addEventListener("resize", fitVideo);
-document.addEventListener("touchstart", () => bgVideo.play(), { once:true });
+bg.addEventListener("loadedmetadata", fit);
+addEventListener("resize", fit);
+document.addEventListener("touchstart",()=>bg.play(),{once:true});
 
-/* ===== MENU ===== */
+/* ========== MENU ========== */
 const menuBtn = document.getElementById("menuBtn");
 const sidebar = document.getElementById("sidebar");
-menuBtn.onclick = () => {
-    const open = sidebar.classList.toggle("show");
-    bgVideo.classList.toggle("is-blurred", open);
+menuBtn.onclick=()=>{
+    sidebar.classList.toggle("show");
+    bg.classList.toggle("is-blurred");
 };
 
-/* ===== MUSIC ===== */
-const music = document.getElementById("bgMusic");
-const eq = document.getElementById("equalizer");
-function toggleMusic() {
-    music.paused ? music.play() : music.pause();
-    eq.classList.toggle("playing");
+/* ========== LOGIN ========== */
+function onLoginSuccess(){
+    document.getElementById("loginOverlay").style.display="none";
+    menuBtn.style.display="flex";
 }
 
-/* ===== LOGIN ===== */
-function onLoginSuccess() {
-    document.getElementById("loginOverlay").style.display = "none";
-    menuBtn.style.display = "flex";
-    eq.style.display = "block";
-}
+/* ========== APPWRITE ========== */
+const client=new Appwrite.Client()
+.setEndpoint("https://nyc.cloud.appwrite.io/v1")
+.setProject("695b05ea0019ea169d0f");
 
-/* ===== APPWRITE ===== */
-const client = new Appwrite.Client()
-    .setEndpoint("https://nyc.cloud.appwrite.io/v1")
-    .setProject("695b05ea0019ea169d0f");
+const storage=new Appwrite.Storage(client);
+const BUCKET_ID="695b0d35001c89df691f";
 
-const storage = new Appwrite.Storage(client);
-const BUCKET_ID = "695b0d35001c89df691f";
-
-/* ===== HELPERS ===== */
-function openPage(id) {
+/* ========== HELPERS ========== */
+function openPage(id){
     sidebar.classList.remove("show");
-    menuBtn.style.display = "none";
-    document.getElementById(id).style.display = "flex";
+    menuBtn.style.display="none";
+    document.getElementById(id).style.display="flex";
+}
+function closePage(id){
+    document.getElementById(id).style.display="none";
+    menuBtn.style.display="flex";
 }
 
-function closePage(id) {
-    document.getElementById(id).style.display = "none";
-    menuBtn.style.display = "flex";
-}
-
-/* ===== PHOTOS ===== */
-async function openPhotos() {
+/* ========== PHOTOS ========== */
+async function openPhotos(){
     openPage("photoPage");
-    const grid = document.getElementById("photoGrid");
-    grid.innerHTML = "<p style='color:white'>Loading...</p>";
-
-    try {
-        const res = await storage.listFiles(BUCKET_ID);
-        grid.innerHTML = "";
-        res.files.filter(f => f.mimeType?.startsWith("image"))
-            .forEach(f => {
-                const img = document.createElement("img");
-                img.src = storage.getFileView(BUCKET_ID, f.$id);
-                grid.appendChild(img);
-            });
-        if (!grid.children.length) grid.innerHTML = "<p style='color:gray'>No images found</p>";
-    } catch {
-        grid.innerHTML = "<p style='color:red'>Access denied or server error</p>";
-    }
+    const g=document.getElementById("photoGrid");
+    g.innerHTML="Loading...";
+    const r=await storage.listFiles(BUCKET_ID);
+    g.innerHTML="";
+    r.files.filter(f=>f.mimeType?.startsWith("image")).forEach(f=>{
+        const i=document.createElement("img");
+        i.src=storage.getFileView(BUCKET_ID,f.$id);
+        g.appendChild(i);
+    });
 }
 
-/* ===== VIDEOS ===== */
-async function openVideos() {
+/* ========== VIDEOS ========== */
+async function openVideos(){
     openPage("videoPage");
-    const grid = document.getElementById("videoGrid");
-    grid.innerHTML = "<p style='color:white'>Loading...</p>";
+    const g=document.getElementById("videoGrid");
+    g.innerHTML="Loading...";
+    const r=await storage.listFiles(BUCKET_ID);
+    g.innerHTML="";
+    r.files.filter(f=>f.mimeType?.startsWith("video")).forEach(f=>{
+        const v=document.createElement("video");
+        v.src=storage.getFileView(BUCKET_ID,f.$id);
+        v.muted=true;
+        v.onclick=()=>openVideoViewer(v.src);
+        g.appendChild(v);
+    });
+}
 
-    try {
-        const res = await storage.listFiles(BUCKET_ID);
-        grid.innerHTML = "";
-        res.files.filter(f => f.mimeType?.startsWith("video"))
-            .forEach(f => {
-                const v = document.createElement("video");
-                v.src = storage.getFileView(BUCKET_ID, f.$id);
-                v.controls = true;
-                v.playsInline = true;
-                grid.appendChild(v);
-            });
-        if (!grid.children.length) grid.innerHTML = "<p style='color:gray'>No videos found</p>";
-    } catch {
-        grid.innerHTML = "<p style='color:red'>Access denied or server error</p>";
-    }
+/* ========== VIDEO VIEWER ========== */
+function openVideoViewer(src){
+    const p=document.getElementById("videoViewerPlayer");
+    document.getElementById("videoViewer").style.display="flex";
+    p.src=src;
+    p.play();
+}
+function closeVideoViewer(){
+    const p=document.getElementById("videoViewerPlayer");
+    p.pause(); p.src="";
+    document.getElementById("videoViewer").style.display="none";
 }
 </script>
 
