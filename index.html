@@ -11,23 +11,22 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Segoe UI', sans-serif;
     overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
     background: black;
 }
 
-/* ================= VIDEO BACKGROUND ================= */
+/* ===== BACKGROUND VIDEO ===== */
 #main-bg-video {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: auto;
-    height: auto;
     max-width: 100%;
     max-height: 100%;
+    width: auto;
+    height: auto;
     transform: translate(-50%, -50%);
     z-index: 1;
-    background: black;
     transition: filter 0.4s ease;
 }
 
@@ -35,7 +34,7 @@ html, body {
     filter: blur(15px) brightness(0.5);
 }
 
-/* ================= LOGIN ================= */
+/* ===== LOGIN ===== */
 #loginOverlay {
     position: fixed;
     inset: 0;
@@ -55,28 +54,27 @@ html, body {
     text-align: center;
 }
 
-#loginBox input {
+#loginBox input, #loginBox button {
     width: 100%;
     padding: 12px;
-    margin: 10px 0;
+    margin-top: 10px;
     border-radius: 5px;
     border: none;
+}
+
+#loginBox input {
     background: #222;
     color: white;
 }
 
 #loginBox button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 5px;
-    border: none;
     background: #2563eb;
     color: white;
     cursor: pointer;
     font-weight: bold;
 }
 
-/* ================= MENU ================= */
+/* ===== MENU ===== */
 #menuBtn {
     position: fixed;
     top: 25px;
@@ -100,6 +98,7 @@ html, body {
     background: white;
 }
 
+/* ===== SIDEBAR ===== */
 #sidebar {
     position: fixed;
     top: 0;
@@ -128,7 +127,62 @@ html, body {
     color: white;
 }
 
-/* ================= EQUALIZER ================= */
+/* ===== PAGES ===== */
+.page {
+    position: fixed;
+    inset: 0;
+    background: #0a0a0a;
+    z-index: 3000;
+    display: none;
+    flex-direction: column;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-row h1 {
+    color: white;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.close-grid {
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.grid img {
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.video-grid video {
+    width: 100%;
+    border-radius: 12px;
+    background: black;
+}
+
+/* ===== EQUALIZER ===== */
 #equalizer {
     position: fixed;
     bottom: 25px;
@@ -136,8 +190,8 @@ html, body {
     width: 50px;
     height: 50px;
     display: none;
-    z-index: 2500;
     cursor: pointer;
+    z-index: 2500;
 }
 
 .bar {
@@ -158,7 +212,7 @@ html, body {
 
 <body>
 
-<!-- VIDEO BACKGROUND -->
+<!-- BACKGROUND VIDEO -->
 <video id="main-bg-video" autoplay muted loop playsinline>
     <source src="background.mp4" type="video/mp4">
 </video>
@@ -167,20 +221,37 @@ html, body {
 <div id="loginOverlay">
     <div id="loginBox">
         <h2>System Login</h2>
-        <input type="email" id="email" placeholder="Hunter Email">
-        <input type="password" id="password" placeholder="Access Key">
+        <input type="email" placeholder="Hunter Email">
+        <input type="password" placeholder="Access Key">
         <button onclick="onLoginSuccess()">Authenticate</button>
     </div>
 </div>
 
 <!-- MENU -->
-<div id="menuBtn">
-    <span></span><span></span><span></span>
-</div>
+<div id="menuBtn"><span></span><span></span><span></span></div>
 
 <div id="sidebar">
-    <div class="sidebar-item">📷 Dungeon Gallery</div>
+    <div class="sidebar-item" onclick="openPhotos()">📷 Dungeon Gallery</div>
+    <div class="sidebar-item" onclick="openVideos()">🎬 Hunter Videos</div>
     <div class="sidebar-item" onclick="location.reload()">🔄 Logout</div>
+</div>
+
+<!-- PHOTO PAGE -->
+<div id="photoPage" class="page">
+    <div class="header-row">
+        <h1>HUNTER ARCHIVE</h1>
+        <span class="close-grid" onclick="closePage('photoPage')">×</span>
+    </div>
+    <div id="photoGrid" class="grid"></div>
+</div>
+
+<!-- VIDEO PAGE -->
+<div id="videoPage" class="page">
+    <div class="header-row">
+        <h1>HUNTER VIDEOS</h1>
+        <span class="close-grid" onclick="closePage('videoPage')">×</span>
+    </div>
+    <div id="videoGrid" class="video-grid"></div>
 </div>
 
 <!-- MUSIC -->
@@ -196,57 +267,111 @@ html, body {
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
+<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
 <script>
-const video = document.getElementById('main-bg-video');
-const menuBtn = document.getElementById('menuBtn');
-const sidebar = document.getElementById('sidebar');
-const eq = document.getElementById('equalizer');
-const music = document.getElementById('bgMusic');
+/* ===== BACKGROUND VIDEO FIT ===== */
+const bgVideo = document.getElementById("main-bg-video");
 
-/* ===== Dynamic Aspect Ratio Matching ===== */
 function fitVideo() {
-    const videoRatio = video.videoWidth / video.videoHeight;
-    const screenRatio = window.innerWidth / window.innerHeight;
-
-    if (screenRatio > videoRatio) {
-        video.style.width = "100%";
-        video.style.height = "auto";
+    const vr = bgVideo.videoWidth / bgVideo.videoHeight;
+    const sr = window.innerWidth / window.innerHeight;
+    if (sr > vr) {
+        bgVideo.style.width = "100%";
+        bgVideo.style.height = "auto";
     } else {
-        video.style.width = "auto";
-        video.style.height = "100%";
+        bgVideo.style.width = "auto";
+        bgVideo.style.height = "100%";
     }
 }
-
-video.addEventListener("loadedmetadata", fitVideo);
+bgVideo.addEventListener("loadedmetadata", fitVideo);
 window.addEventListener("resize", fitVideo);
+document.addEventListener("touchstart", () => bgVideo.play(), { once:true });
 
-/* iOS Playback Fix */
-document.addEventListener('touchstart', () => {
-    if (video.paused) video.play();
-}, { once: true });
-
-/* Menu */
+/* ===== MENU ===== */
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
 menuBtn.onclick = () => {
-    const show = sidebar.classList.toggle("show");
-    video.classList.toggle("is-blurred", show);
+    const open = sidebar.classList.toggle("show");
+    bgVideo.classList.toggle("is-blurred", open);
 };
 
-/* Music */
+/* ===== MUSIC ===== */
+const music = document.getElementById("bgMusic");
+const eq = document.getElementById("equalizer");
 function toggleMusic() {
-    if (music.paused) {
-        music.play();
-        eq.classList.add("playing");
-    } else {
-        music.pause();
-        eq.classList.remove("playing");
+    music.paused ? music.play() : music.pause();
+    eq.classList.toggle("playing");
+}
+
+/* ===== LOGIN ===== */
+function onLoginSuccess() {
+    document.getElementById("loginOverlay").style.display = "none";
+    menuBtn.style.display = "flex";
+    eq.style.display = "block";
+}
+
+/* ===== APPWRITE ===== */
+const client = new Appwrite.Client()
+    .setEndpoint("https://nyc.cloud.appwrite.io/v1")
+    .setProject("695b05ea0019ea169d0f");
+
+const storage = new Appwrite.Storage(client);
+const BUCKET_ID = "695b0d35001c89df691f";
+
+/* ===== HELPERS ===== */
+function openPage(id) {
+    sidebar.classList.remove("show");
+    menuBtn.style.display = "none";
+    document.getElementById(id).style.display = "flex";
+}
+
+function closePage(id) {
+    document.getElementById(id).style.display = "none";
+    menuBtn.style.display = "flex";
+}
+
+/* ===== PHOTOS ===== */
+async function openPhotos() {
+    openPage("photoPage");
+    const grid = document.getElementById("photoGrid");
+    grid.innerHTML = "<p style='color:white'>Loading...</p>";
+
+    try {
+        const res = await storage.listFiles(BUCKET_ID);
+        grid.innerHTML = "";
+        res.files.filter(f => f.mimeType?.startsWith("image"))
+            .forEach(f => {
+                const img = document.createElement("img");
+                img.src = storage.getFileView(BUCKET_ID, f.$id);
+                grid.appendChild(img);
+            });
+        if (!grid.children.length) grid.innerHTML = "<p style='color:gray'>No images found</p>";
+    } catch {
+        grid.innerHTML = "<p style='color:red'>Access denied or server error</p>";
     }
 }
 
-/* Login */
-function onLoginSuccess() {
-    document.getElementById('loginOverlay').style.display = "none";
-    menuBtn.style.display = "flex";
-    eq.style.display = "block";
+/* ===== VIDEOS ===== */
+async function openVideos() {
+    openPage("videoPage");
+    const grid = document.getElementById("videoGrid");
+    grid.innerHTML = "<p style='color:white'>Loading...</p>";
+
+    try {
+        const res = await storage.listFiles(BUCKET_ID);
+        grid.innerHTML = "";
+        res.files.filter(f => f.mimeType?.startsWith("video"))
+            .forEach(f => {
+                const v = document.createElement("video");
+                v.src = storage.getFileView(BUCKET_ID, f.$id);
+                v.controls = true;
+                v.playsInline = true;
+                grid.appendChild(v);
+            });
+        if (!grid.children.length) grid.innerHTML = "<p style='color:gray'>No videos found</p>";
+    } catch {
+        grid.innerHTML = "<p style='color:red'>Access denied or server error</p>";
+    }
 }
 </script>
 
